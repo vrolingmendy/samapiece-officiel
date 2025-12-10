@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Erreur - Samapiece{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin: 40px 0;">
+    <h2 style="color: #e74c3c; font-size: 2em;">❌ Erreur {{ error_code }}</h2>
+    
+    <p style="font-size: 1.1em; color: #7f8c8d; margin: 30px 0;">
+        {{ error_message }}
+    </p>
+    
+    <p style="color: #7f8c8d; margin: 20px 0;">
+        Une erreur s'est produite. Veuillez réessayer ou contacter l'administrateur.
+    </p>
+    
+    <div style="margin-top: 30px;">
+        <a href="{{ url_for('home') }}" class="btn">Retour à l'accueil</a>
+    </div>
+</div>
+{% endblock %}

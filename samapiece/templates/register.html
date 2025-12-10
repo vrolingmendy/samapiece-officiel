@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}Authentification - Samapiece{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .auth-header h1 {
+        font-size: 2em;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    
+    .auth-header p {
+        color: #7f8c8d;
+        font-size: 1.05em;
+    }
+    
+    .tabs {
+        display: flex;
+        margin-bottom: 30px;
+        border-bottom: 3px solid #ecf0f1;
+        gap: 0;
+    }
+    
+    .tab-button {
+        flex: 1;
+        padding: 15px 20px;
+        background: none;
+        border: none;
+        font-size: 1em;
+        font-weight: 600;
+        color: #7f8c8d;
+        cursor: pointer;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -3px;
+        text-align: center;
+    }
+    
+    .tab-button.active {
+        color: #3498db;
+        border-bottom-color: #3498db;
+    }
+    
+    .tab-button:hover {
+        color: #2c3e50;
+    }
+    
+    .tab-content {
+        display: none;
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 1em;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: white;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+    
+    .form-group input::placeholder {
+        color: #bdc3c7;
+    }
+    
+    .required-label::after {
+        content: " *";
+        color: #e74c3c;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+    
+    .btn-submit {
+        flex: 1;
+        padding: 12px 20px;
+        font-size: 1em;
+        font-weight: 600;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        background-color: #2980b9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn-cancel {
+        padding: 12px 20px;
+        font-size: 1em;
+        font-weight: 600;
+        background-color: white;
+        color: #7f8c8d;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #f9f9f9;
+        border-color: #3498db;
+        color: #3498db;
+    }
+    
+    .info-text {
+        color: #7f8c8d;
+        font-size: 0.9em;
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-header">
+        <h1>🔐 Authentification</h1>
+        <p>Connectez-vous à votre compte Samapiece</p>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'warning' %}
+                    <div style="background-color: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ffc107;">
+                        <strong>⚠️ Information:</strong> {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('login', event)">
+            🔓 Se Connecter
+        </button>
+        <button class="tab-button" onclick="showTab('register', event)">
+            📝 Créer un Compte
+        </button>
+    </div>
+    
+    <!-- ============ TAB: CONNEXION ============ -->
+    <div id="login" class="tab-content active">
+        <form method="POST">
+            <input type="hidden" name="action" value="login">
+            
+            <div class="form-group">
+                <label class="required-label">Email ou Téléphone</label>
+                <input type="text" name="login_identifier" id="login_identifier" 
+                       placeholder="exemple@email.com ou +221701234567" required>
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                    Entrez votre email ou votre numéro de téléphone
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label class="required-label">Mot de passe</label>
+                <input type="password" name="password" id="password" 
+                       placeholder="Votre mot de passe" required>
+            </div>
+            
+            <div style="text-align: right; margin: 10px 0;">
+                <a href="{{ url_for('forgot_password') }}" style="color: #3498db; text-decoration: none; font-size: 0.9em;">
+                    Mot de passe oublié?
+                </a>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-submit">Se Connecter</button>
+            </div>
+        </form>
+        
+        <div class="info-text">
+            Pas de compte? <a href="javascript:showTab('register', event)" style="color: #3498db; text-decoration: underline;">Créez-en un</a>
+        </div>
+    </div>
+    
+    <!-- ============ TAB: ENREGISTREMENT ============ -->
+    <div id="register" class="tab-content">
+        <form method="POST">
+            <input type="hidden" name="action" value="register">
+            
+            <div class="form-group">
+                <label class="required-label">Nom</label>
+                <input type="text" name="nom" placeholder="Votre nom" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="required-label">Prénom</label>
+                <input type="text" name="prenom" placeholder="Votre prénom" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="votre.email@exemple.com">
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                    Email ou téléphone est obligatoire
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label>Téléphone</label>
+                <input type="tel" name="telephone" placeholder="+221701234567">
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                    Email ou téléphone est obligatoire
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label class="required-label">Mot de passe</label>
+                <input type="password" name="new_password" placeholder="Votre mot de passe" required>
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">
+                    Minimum 6 caractères
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label class="required-label">Confirmer le mot de passe</label>
+                <input type="password" name="confirm_password" placeholder="Confirmez votre mot de passe" required>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-submit">Créer mon Compte</button>
+            </div>
+        </form>
+        
+        <div class="info-text">
+            Vous avez un compte? <a href="javascript:showTab('login', event)" style="color: #3498db; text-decoration: underline;">Connectez-vous</a>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{{ url_for('home') }}" class="btn-cancel">← Retour à l'accueil</a>
+</div>
+
+<script>
+function showTab(tabName, event) {
+    if (event) event.preventDefault();
+    
+    // Masquer tous les tabs
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Désactiver tous les boutons
+    const buttons = document.querySelectorAll('.tab-button');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Afficher le tab sélectionné
+    document.getElementById(tabName).classList.add('active');
+    
+    // Activer le bouton correspondant
+    event.target.classList.add('active');
+}
+</script>
+
+{% endblock %}

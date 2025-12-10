@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Se Connecter - Samapiece{% endblock %}
+
+{% block content %}
+<h2>Se Connecter</h2>
+
+<p style="margin-bottom: 20px;">
+    Sélectionnez votre compte pour accéder à votre profil et voir vos documents déclarés.
+</p>
+
+{% if users %}
+    <form method="POST">
+        <div class="form-group">
+            <label for="user_id">Sélectionnez votre compte *</label>
+            <select id="user_id" name="user_id" required>
+                <option value="">-- Choisissez votre compte --</option>
+                {% for user in users %}
+                    <option value="{{ user._id }}">
+                        {{ user.nom }} {{ user.prenom }}
+                        {% if user.email %} ({{ user.email }}){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="button-group">
+            <button type="submit">Se Connecter</button>
+            <a href="{{ url_for('home') }}" class="btn secondary">Annuler</a>
+        </div>
+    </form>
+{% else %}
+    <div style="background-color: #f8d7da; padding: 20px; border-radius: 8px; border-left: 4px solid #e74c3c;">
+        <h3 style="color: #721c24;">Aucun compte créé</h3>
+        <p style="color: #721c24; margin: 10px 0;">
+            Il n'y a pas encore de compte enregistré. Veuillez créer un compte d'abord.
+        </p>
+        <a href="{{ url_for('register') }}" class="btn" style="margin-top: 10px;">Créer un compte</a>
+    </div>
+{% endif %}
+{% endblock %}

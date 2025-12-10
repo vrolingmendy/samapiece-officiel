@@ -1,0 +1,96 @@
+{
+  "users": [
+    {
+      "nom": "mendy",
+      "prenom": "vroling",
+      "email": "vroling@groupeisi.com",
+      "telephone": "0920635048",
+      "code_pays": "+221",
+      "date_creation": "2025-12-10T09:16:55.465520",
+      "_id": "69393a87dd27820eb97a6ee9",
+      "is_verified": true
+    },
+    {
+      "nom": "alvin",
+      "prenom": "mendy",
+      "email": "vrolingmendes@gmail.com",
+      "telephone": "+221787919341",
+      "password_hash": "pbkdf2:sha256:600000$38YlalgR9M7CS0Fr$9ea435555328156cd2c3bac37d56967a69751570d62603ec4d5da9c2c7c156f7",
+      "date_creation": "2025-12-10T10:14:48.583801",
+      "_id": "693948181c88ebcee72d5cec",
+      "is_verified": true
+    }
+  ],
+  "documents": [
+    {
+      "type_piece": "Carte d'identité",
+      "nom": "mendy",
+      "prenom": "yann",
+      "date_naissance": "1999-04-13",
+      "lieu_naissance": "dakar",
+      "photo_path": "uploads/mendy_yann_1765358295.760406.png",
+      "user_id": "69393a87dd27820eb97a6ee9",
+      "date_declaration": "2025-12-10T09:18:15.763834",
+      "_id": "69393ad7dd27820eb97a6eea"
+    },
+    {
+      "_id": "693948741c88ebcee72d5ced",
+      "type_piece": "Passeport",
+      "nom": "mendy",
+      "prenom": "fredy",
+      "date_naissance": "2010-10-10",
+      "lieu_naissance": "dakar",
+      "photo_path": "uploads/693948741c88ebcee72d5ced.png",
+      "user_id": "693948181c88ebcee72d5cec",
+      "date_declaration": "2025-12-10T10:16:20.992703",
+      "recovery_code": "ML0EFDGT"
+    },
+    {
+      "_id": "6939964a0ce162b89b86f14f",
+      "type_piece": "Carte d'identité",
+      "nom": "Nassirou",
+      "prenom": "yann",
+      "date_naissance": "2010-10-10",
+      "lieu_naissance": "Kaolack",
+      "photo_path": "uploads/6939964a0ce162b89b86f14f.png",
+      "user_id": "693948181c88ebcee72d5cec",
+      "date_declaration": "2025-12-10T15:48:26.609140",
+      "recovery_code": "TM5URV4E"
+    }
+  ],
+  "alerts": [
+    {
+      "_id": "68b6b085-2330-4fb9-9c8d-0601d37efb05",
+      "email": "vroling@aria-edu.com",
+      "type_piece": "Carte d'identité",
+      "nom": "Blaise pascal",
+      "prenom": "yann",
+      "date_naissance": "2010-10-10",
+      "lieu_naissance": "dakar",
+      "date_creation": "2025-12-10T13:19:51.631125",
+      "is_active": true
+    },
+    {
+      "_id": "97db5e7b-8ace-440b-ad75-21059a34c86a",
+      "email": "samapiece0@gmail.com",
+      "type_piece": "Carte d'identité",
+      "nom": "mendy",
+      "prenom": "mendy",
+      "date_naissance": "2003-10-10",
+      "lieu_naissance": "dakar",
+      "date_creation": "2025-12-10T13:37:02.376125",
+      "is_active": true
+    },
+    {
+      "_id": "22602cf0-7ce9-490b-85fe-55de7bbbdcd7",
+      "email": "samapiece0@gmail.com",
+      "type_piece": "Carte d'identité",
+      "nom": "Nassirou",
+      "prenom": "yann",
+      "date_naissance": "2010-10-10",
+      "lieu_naissance": "Kaolack",
+      "date_creation": "2025-12-10T15:44:58.676292",
+      "is_active": true
+    }
+  ]
+}

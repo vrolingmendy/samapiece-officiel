@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Déclarer un document - Samapiece{% endblock %}
+
+{% block extra_css %}
+<style>
+    .declare-container { max-width: 600px; margin: 0 auto; }
+    .declare-header { text-align: center; margin-bottom: 40px; }
+    .declare-header input { width: 100%; max-width: 400px; padding: 12px 20px; font-size: 1em; border: 2px solid #e0e0e0; border-radius: 25px; background: #f8f9fa; color: #2c3e50; margin-bottom: 30px; }
+    .section-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .section-title { display: flex; align-items: center; font-size: 1.1em; font-weight: 600; color: #2c3e50; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+    .section-title span:first-child { font-size: 1.4em; margin-right: 10px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 600; color: #2c3e50; margin-bottom: 8px; font-size: 0.95em; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; font-size: 1em; border: 2px solid #e0e0e0; border-radius: 8px; background: #fff; color: #2c3e50; transition: all 0.3s ease; box-sizing: border-box; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 0 3px rgba(52,152,219,0.1); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: #bdc3c7; }
+    .required-label::after { content: " *"; color: #e74c3c; }
+    /* Upload */
+    .upload-section { border: 2px dashed #3498db; border-radius: 12px; padding: 10px; text-align: center; background: #f8fbff; cursor: pointer; transition: all 0.3s ease; margin-bottom: 20px; }
+    .upload-section:hover { background: #f0f8ff; border-color: #2980b9; }
+    .upload-section input[type="file"] { display: none; }
+    .upload-icon { font-size: 1.4em; margin-bottom: 4px; display: block; }
+    .upload-text { color: #3498db; font-weight: 600; margin-bottom: 4px; font-size: 0.95em; }
+    .upload-subtext { color: #7f8c8d; font-size: 0.85em; margin-bottom: 3px; }
+    .upload-formats { margin-top: 2px; color: #27ae60; font-size: 0.8em; }
+    /* Types de documents */
+    .doc-type-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 8px; }
+    .doc-category { background: #fdfefe; border: 1px solid #dfe7f3; border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 10px rgba(18,38,63,0.06); }
+    .doc-category-header { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #2c3e50; margin-bottom: 10px; }
+    .doc-category-list { display: flex; flex-direction: column; gap: 10px; }
+    .doc-card { display: block; }
+    .doc-card input[type="checkbox"] { display: none; }
+    .doc-card-body { display: flex; align-items: center; justify-content: space-between; border: 1px solid #e5ebf5; background: #fff; border-radius: 12px; padding: 12px 14px; transition: all 0.25s ease; }
+    .doc-card-left { display: flex; align-items: center; gap: 12px; }
+    .doc-card-icon { font-size: 1.1em; color: #2d7ef7; background: #e9f2ff; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .doc-card-title { font-weight: 600; color: #2c3e50; font-size: 0.95em; }
+    .doc-card-check { width: 20px; height: 20px; border: 2px solid #c7d4e8; border-radius: 6px; background: #fff; position: relative; transition: all 0.2s ease; }
+    .doc-card input[type="checkbox"]:checked + .doc-card-body { border-color: #2d7ef7; box-shadow: 0 6px 16px rgba(45,126,247,0.15); background: #f7fbff; }
+    .doc-card input[type="checkbox"]:checked + .doc-card-body .doc-card-check { background: #2d7ef7; border-color: #2d7ef7; box-shadow: 0 0 0 3px rgba(45,126,247,0.15); }
+    .doc-card input[type="checkbox"]:checked + .doc-card-body .doc-card-check::after { content: ''; position: absolute; left: 5px; top: 1px; width: 6px; height: 12px; border: 2px solid #fff; border-top: 0; border-left: 0; transform: rotate(45deg); }
+    /* Modal Autres */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 999; }
+    .modal { background: #fff; border-radius: 12px; padding: 20px; width: 100%; max-width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .modal-title { font-weight: 700; color: #2c3e50; }
+    .modal-close { border: none; background: none; font-size: 1.2em; cursor: pointer; color: #7f8c8d; }
+    .modal-body { display: flex; flex-direction: column; gap: 12px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+    .btn-secondary { background: #ecf0f1; color: #2c3e50; border: 1px solid #d0d7de; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+    .btn-primary { background: #3498db; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+    @media (max-width: 768px) { .doc-type-board { grid-template-columns: 1fr; } .doc-card-body { padding: 12px; } .declare-buttons { flex-direction: column; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="declare-container">
+    <div class="declare-header">
+        <input type="text" placeholder="Déclarer votre document ici" readonly style="cursor: default;">
+    </div>
+    
+    <form id="declare-form" method="POST" enctype="multipart/form-data">
+        <!-- SECTION 1: Images du document -->
+        <div class="section-card">
+            <div class="section-title">
+                <span>📸</span>
+                <div>Images du document</div>
+            </div>
+            <p style="color: #7f8c8d; margin-bottom: 20px; font-size: 0.9em;">Ajoutez des photos pour faciliter l'identification</p>
+            
+            <div class="upload-section" onclick="document.getElementById('photo_piece').click()">
+                <div class="upload-icon">⬆️</div>
+                <div class="upload-text">Cliquez pour uploader</div>
+                <div class="upload-subtext">ou glissez-déposez vos images</div>
+                <div class="upload-formats">✅ JPG, PNG • Max 5 images</div>
+            </div>
+            <input type="file" id="photo_piece" name="photo_piece" accept="image/*" required>
+        </div>
+        
+        <!-- SECTION 2: Informations personnelles de la pièce trouvée -->
+        <div class="section-card">
+            <div class="section-title">
+                <span>👤</span>
+                <div>Informations personnelles de la pièce trouvée</div>
+            </div>
+            <p style="color: #7f8c8d; margin-bottom: 20px; font-size: 0.9em;">Renseignements nécessaires pour l'identification</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="prenom" class="required-label">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nom" class="required-label">Nom</label>
+                    <input type="text" id="nom" name="nom" placeholder="Votre nom de famille" required>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="date_naissance" class="required-label">Date de naissance</label>
+                    <input type="date" id="date_naissance" name="date_naissance" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lieu_naissance" class="required-label">Lieu de naissance</label>
+                    <input type="text" id="lieu_naissance" name="lieu_naissance" placeholder="Ville de naissance" required>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 3: Type de document -->
+        <div class="section-card">
+            <div class="section-title">
+                <span>🗂️</span>
+                <div>Type de document</div>
+            </div>
+            <p style="color: #7f8c8d; margin-bottom: 18px; font-size: 0.9em;">Sélectionnez jusqu'à 3 documents</p>
+            
+            {% set categories = [
+                {'title': "Documents d'identité", 'icon': "🪪", 'items': ["Carte d'identité", "Passeport", "Permis de conduire"]},
+                {'title': "Documents de séjour", 'icon': "🛂", 'items': ["Permis de séjour", "Carte consulaire"]},
+                {'title': "Autres", 'icon': "📁", 'items': ["Autre"]}
+            ] %}
+            {% set ns = namespace(first_done=False) %}
+
+            <div class="doc-type-board">
+                {% for category in categories %}
+                    <div class="doc-category">
+                        <div class="doc-category-header">
+                            <span class="cat-icon">{{ category.icon }}</span>
+                            <span class="cat-title">{{ category.title }}</span>
+                        </div>
+                        <div class="doc-category-list">
+                            {% for item in category['items'] %}
+                                {% if item in types_documents %}
+                                    <label class="doc-card">
+                                        <input type="checkbox" name="type_piece" value="{{ item }}" {% if not ns.first_done %}checked{% set ns.first_done = True %}{% endif %}>
+                                        <div class="doc-card-body">
+                                            <div class="doc-card-left">
+                                                <div class="doc-card-icon">
+                                                    {% set lower = item.lower() %}
+                                                    {% if 'identit' in lower %}🪪
+                                                    {% elif 'passeport' in lower %}🛂
+                                                    {% elif 'conduire' in lower %}🚗
+                                                    {% elif 'séjour' in lower %}🏙️
+                                                    {% elif 'consulaire' in lower %}🪪
+                                                    {% else %}📄
+                                                    {% endif %}
+                                                </div>
+                                                <div class="doc-card-title">{{ item }}</div>
+                                            </div>
+                                            <div class="doc-card-check"></div>
+                                        </div>
+                                    </label>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Compte utilisateur -->
+        <div class="form-group">
+            <label class="required-label">Votre compte</label>
+            <div style="padding: 12px 16px; background-color: #e8f4f8; border: 2px solid #3498db; border-radius: 8px; color: #0c5460; font-weight: 600;">
+                👤 {{ current_user.nom }} {{ current_user.prenom }}
+                <small style="display: block; color: #0c5460; margin-top: 5px; font-weight: normal;">
+                    📧 {{ current_user.email if current_user.email else "Pas d'email" }}
+                </small>
+            </div>
+        </div>
+        
+        <!-- Buttons -->
+        <div class="declare-buttons">
+            <button type="submit" class="btn-declare">📄 Déclarer le document →</button>
+        </div>
+        
+        <div class="bottom-notice">
+            Votre déclaration sera vérifiée conformément à l'accueil des informations
+        </div>
+    </form>
+</div>
+
+<!-- Modal Autres -->
+<div class="modal-backdrop" id="modal-autres">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Vous avez sélectionné « Autre »</div>
+            <button type="button" class="modal-close" id="modal-close-autres">✖</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:#555;">Merci de préciser le type d’objet.</p>
+            <div class="form-group">
+                <label for="autre_categorie" class="required-label">Catégorie de l’objet</label>
+                <input type="text" id="autre_categorie" name="autre_categorie" list="autre_categorie_suggestions" placeholder="Téléphone, clés de voiture, sac, ordinateur, portefeuille…" />
+                <datalist id="autre_categorie_suggestions">
+                    <option value="Téléphone">
+                    <option value="Ordinateur">
+                    <option value="Sac / Valise">
+                    <option value="Porte-monnaie / Portefeuille">
+                    <option value="Clés / Clé de voiture">
+                    <option value="Documents divers">
+                </datalist>
+            </div>
+            <div class="form-group">
+                <label for="autre_marque">Marque (optionnel)</label>
+                <input type="text" id="autre_marque" name="autre_marque" placeholder="Apple, Samsung, Renault, Louis Vuitton…">
+            </div>
+            <div class="form-group">
+                <label for="autre_modele">Modèle / Référence (optionnel)</label>
+                <input type="text" id="autre_modele" name="autre_modele" placeholder="iPhone 12, Clio 4 clé carte, Asus ROG…">
+            </div>
+            <div class="form-group">
+                <label for="autre_couleur">Couleur (optionnel)</label>
+                <input type="text" id="autre_couleur" name="autre_couleur" placeholder="Noir, bleu nuit, rouge…">
+            </div>
+            <div class="form-group">
+                <label for="autre_description" class="required-label">Description détaillée</label>
+                <textarea id="autre_description" name="autre_description" rows="4" placeholder="Description de l’objet, état, accessoires, particularités… Où l’objet a-t-il été trouvé/perdu ?" required></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="modal-cancel-autres">Annuler</button>
+            <button type="button" class="btn-primary" id="modal-validate-autres">Valider</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Drag and drop pour upload
+    const uploadSection = document.querySelector('.upload-section');
+    const fileInput = document.getElementById('photo_piece');
+    uploadSection.addEventListener('dragover', (e) => { e.preventDefault(); uploadSection.style.backgroundColor = '#e3f2fd'; });
+    uploadSection.addEventListener('dragleave', () => { uploadSection.style.backgroundColor = '#f8fbff'; });
+    uploadSection.addEventListener('drop', (e) => { e.preventDefault(); fileInput.files = e.dataTransfer.files; uploadSection.style.backgroundColor = '#f8fbff'; });
+
+    // Limiter la sélection de types de documents à 3
+    const typeCheckboxes = Array.from(document.querySelectorAll('input[name="type_piece"]'));
+    typeCheckboxes.forEach((cb) => {
+        cb.addEventListener('change', () => {
+            const checked = typeCheckboxes.filter(c => c.checked);
+            if (checked.length > 3) {
+                cb.checked = false;
+                alert('Vous pouvez sélectionner au maximum 3 documents.');
+            }
+        });
+    });
+
+    // Modal Autres
+    const modalAutres = document.getElementById('modal-autres');
+    const closeAutres = document.getElementById('modal-close-autres');
+    const cancelAutres = document.getElementById('modal-cancel-autres');
+    const validateAutres = document.getElementById('modal-validate-autres');
+    const autreFields = ['autre_categorie','autre_marque','autre_modele','autre_couleur','autre_description'].map(id => document.getElementById(id));
+    const autreCheckbox = typeCheckboxes.find(cb => cb.value.toLowerCase() === 'autre');
+
+    function openAutresModal() { modalAutres.style.display = 'flex'; }
+    function closeAutresModal() { modalAutres.style.display = 'none'; }
+
+    if (autreCheckbox) {
+        autreCheckbox.addEventListener('change', () => {
+            if (autreCheckbox.checked) openAutresModal();
+            else closeAutresModal();
+        });
+    }
+    closeAutres.addEventListener('click', closeAutresModal);
+    cancelAutres.addEventListener('click', () => { autreCheckbox.checked = false; closeAutresModal(); });
+    validateAutres.addEventListener('click', () => {
+        const description = document.getElementById('autre_description').value.trim();
+        if (!description) {
+            alert('La description détaillée est obligatoire pour "Autre".');
+            return;
+        }
+        closeAutresModal();
+    });
+
+    // Validation finale : si "Autre" est sélectionné, description requise
+    document.getElementById('declare-form').addEventListener('submit', (e) => {
+        if (autreCheckbox && autreCheckbox.checked) {
+            const description = document.getElementById('autre_description').value.trim();
+            if (!description) {
+                e.preventDefault();
+                alert('Veuillez renseigner la description détaillée pour "Autre".');
+            }
+        }
+    });
+</script>
+
+{% endblock %}

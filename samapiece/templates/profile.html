@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Profil - Samapiece{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .profile-tabs {
+        display: flex;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #ecf0f1;
+    }
+    
+    .profile-tab-button {
+        flex: 1;
+        padding: 15px 20px;
+        background: none;
+        border: none;
+        font-size: 1.05em;
+        font-weight: bold;
+        color: #7f8c8d;
+        cursor: pointer;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+    }
+    
+    .profile-tab-button.active {
+        color: #3498db;
+        border-bottom-color: #3498db;
+    }
+    
+    .profile-tab-button:hover {
+        color: #2c3e50;
+    }
+    
+    .profile-tab-content {
+        display: none;
+    }
+    
+    .profile-tab-content.active {
+        display: block;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        background-color: #f9f9f9;
+        padding: 25px;
+        border-radius: 8px;
+    }
+    
+    .info-item {
+        padding: 15px;
+        background-color: white;
+        border-radius: 6px;
+        border-left: 4px solid #3498db;
+    }
+    
+    .info-label {
+        color: #7f8c8d;
+        font-size: 0.9em;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+    
+    .info-value {
+        color: #2c3e50;
+        font-size: 1.1em;
+        word-break: break-word;
+    }
+    
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+    
+    .document-card {
+        background-color: white;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    .document-card:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+        border-color: #3498db;
+    }
+    
+    .document-image-container {
+        position: relative;
+        width: 100%;
+        background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+        overflow: hidden;
+    }
+    
+    .document-image-container img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+    
+    .document-card:hover .document-image-container img {
+        transform: scale(1.05);
+    }
+    
+    .document-image-placeholder {
+        width: 100%;
+        height: 250px;
+        background-color: #ecf0f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3em;
+    }
+    
+    .document-info {
+        padding: 15px;
+    }
+    
+    .document-type {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        margin-bottom: 10px;
+    }
+    
+    .document-title {
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+    
+    .document-detail {
+        font-size: 0.9em;
+        color: #7f8c8d;
+        margin-bottom: 5px;
+    }
+    
+    .recovery-section {
+        background-color: #f9f9f9;
+        padding: 25px;
+        border-radius: 8px;
+    }
+    
+    .recovery-form {
+        max-width: 500px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h1 style="text-align: center; margin-bottom: 10px;">👤 Mon Espace Personnel</h1>
+    <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">
+        Gérez vos informations, consultez vos déclarations et récupérez vos codes
+    </p>
+    
+    <!-- TABS NAVIGATION -->
+    <div class="profile-tabs">
+        <button class="profile-tab-button active" onclick="showProfileTab('profil', event)">
+            👤 Mon Profil
+        </button>
+        <button class="profile-tab-button" onclick="showProfileTab('objets', event)">
+            📦 Objets Déclarés
+        </button>
+        <button class="profile-tab-button" onclick="showProfileTab('recuperation', event)">
+            🔑 Code de Récupération
+        </button>
+    </div>
+    
+    <!-- TAB 1: MON PROFIL -->
+    <div id="profil" class="profile-tab-content active">
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Nom Complet</div>
+                <div class="info-value">{{ user.nom }} {{ user.prenom }}</div>
+            </div>
+            
+            {% if user.email %}
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ user.email }}</div>
+                </div>
+            {% endif %}
+            
+            {% if user.telephone %}
+                <div class="info-item">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">
+                        {% if user.code_pays %}{{ user.code_pays }} {% endif %}{{ user.telephone }}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="info-item">
+                <div class="info-label">Membre depuis</div>
+                <div class="info-value">
+                    {% if user.date_creation %}
+                        {{ user.date_creation[:10] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="{{ url_for('declare') }}" class="btn">
+                📝 Déclarer un nouveau document
+            </a>
+        </div>
+    </div>
+    
+    <!-- TAB 2: OBJETS DÉCLARÉS -->
+    <div id="objets" class="profile-tab-content">
+        {% if user_documents %}
+            <p style="margin-bottom: 20px; color: #7f8c8d;">
+                Vous avez déclaré <strong>{{ user_documents|length }}</strong> objet(s)
+            </p>
+            
+            <div class="documents-grid">
+                {% for doc in user_documents %}
+                    <div class="document-card">
+                        <div class="document-image-container">
+                            {% if doc.photo_path %}
+                                <img src="{{ url_for('uploaded_file', filename=doc.photo_path.split('/')[-1]) }}" alt="{{ doc.type_piece }}" loading="lazy">
+                            {% else %}
+                                <div class="document-image-placeholder">📄</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="document-info">
+                            <div class="document-type">{{ doc.type_piece }}</div>
+                            
+                            <div class="document-title">{{ doc.nom }} {{ doc.prenom }}</div>
+                            
+                            {% if doc.date_declaration %}
+                                <div class="document-detail">
+                                    📅 {{ doc.date_declaration[:10] }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if doc.lieu_naissance %}
+                                <div class="document-detail">
+                                    📍 {{ doc.lieu_naissance }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if doc.telephone_declarant %}
+                                <div class="document-detail">
+                                    ☎️ {{ doc.telephone_declarant }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="background-color: #ffeaa7; padding: 25px; border-radius: 8px; border-left: 4px solid #fdcb6e; text-align: center;">
+                <h3 style="color: #d63031; margin-bottom: 10px;">📭 Aucun objet déclaré</h3>
+                <p style="color: #d63031; margin-bottom: 15px;">
+                    Vous n'avez pas encore déclaré d'objet. Commencez maintenant en cliquant sur le bouton ci-dessous.
+                </p>
+                <a href="{{ url_for('declare') }}" class="btn">📝 Déclarer mon premier objet</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- TAB 3: CODE DE RÉCUPÉRATION -->
+    <div id="recuperation" class="profile-tab-content">
+        <div class="recovery-section">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">🔐 Saisir un Code de Récupération</h3>
+            
+            <p style="margin-bottom: 20px; color: #7f8c8d;">
+                Si vous avez un code de récupération, saisissez-le ci-dessous pour récupérer votre objet perdu.
+            </p>
+            
+            <form class="recovery-form" method="POST" action="{{ url_for('recover_document') }}">
+                <div class="form-group">
+                    <label for="recovery_code">Code de Récupération *</label>
+                    <input type="text" id="recovery_code" name="recovery_code" 
+                           placeholder="Entrez votre code (ex: ABC123XYZ)" 
+                           required style="font-family: monospace; font-size: 1.1em;">
+                    <small style="color: #7f8c8d;">
+                        Le code vous a été fourni lors de la déclaration de l'objet
+                    </small>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit">🔓 Récupérer l'objet</button>
+                </div>
+            </form>
+            
+            <div style="margin-top: 30px; padding: 20px; background-color: #d4edda; border-radius: 8px; border-left: 4px solid #27ae60;">
+                <h4 style="color: #155724; margin-bottom: 10px;">💡 Comment ça fonctionne?</h4>
+                <ul style="color: #155724; margin: 0; padding-left: 20px;">
+                    <li>Chaque objet déclaré reçoit un code de récupération unique</li>
+                    <li>Le propriétaire de l'objet perdu utilise ce code pour le récupérer</li>
+                    <li>Une fois le code entré, le propriétaire sera contacté via les informations de contact que vous avez fournies</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 40px; text-align: center;">
+    <a href="{{ url_for('home') }}" class="btn" style="background-color: #95a5a6;">
+        🏠 Retour à l'accueil
+    </a>
+</div>
+
+<script>
+function showProfileTab(tabName, event) {
+    event.preventDefault();
+    
+    // Masquer tous les tabs
+    const tabs = document.querySelectorAll('.profile-tab-content');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Désactiver tous les boutons
+    const buttons = document.querySelectorAll('.profile-tab-button');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Afficher le tab sélectionné
+    document.getElementById(tabName).classList.add('active');
+    
+    // Activer le bouton correspondant
+    event.target.classList.add('active');
+}
+</script>
+{% endblock %}
