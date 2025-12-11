@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Administrateur - Samapiece</title>
+    <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .admin-login-container { width: 100%; max-width: 450px; padding: 20px; margin: 20px; }
+    .login-card { background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); overflow: hidden; animation: slideUp 0.5s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .login-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 40px 20px; text-align: center; }
+    .login-header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 10px; font-weight: 700; }
+    .login-header p { font-size: clamp(0.9rem, 2vw, 1.1rem); opacity: 0.9; }
+    .login-form { padding: 30px 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 600; color: #2c3e50; margin-bottom: 8px; font-size: clamp(0.9rem, 2vw, 1rem); }
+    .form-group input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: clamp(0.9rem, 2vw, 1rem); transition: all 0.3s ease; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+    .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
+    .button-group button, .button-group a { padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; font-size: clamp(0.85rem, 2vw, 1rem); cursor: pointer; transition: all 0.3s ease; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; }
+    .button-group button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .button-group button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+    .button-group a { background: #f0f0f0; color: #2c3e50; border: 2px solid #e0e0e0; }
+    .button-group a:hover { background: #e0e0e0; border-color: #c0c0c0; }
+    .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 15px; font-size: clamp(0.85rem, 2vw, 0.95rem); }
+    .alert.success { background-color: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+    .alert.error { background-color: #f8d7da; color: #721c24; border-left: 4px solid #e74c3c; }
+    .login-warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 6px; margin-top: 20px; }
+    .login-warning p { margin: 0; font-size: clamp(0.85rem, 2vw, 0.95rem); color: #856404; }
+    .login-warning p:first-child { font-weight: 600; margin-bottom: 5px; }
+    @media (max-width: 600px) { .admin-login-container { padding: 15px; margin: 15px; } .login-form { padding: 20px; } .button-group { grid-template-columns: 1fr; } .login-header { padding: 30px 20px; } }
+    @media (max-width: 400px) { .login-header h1 { font-size: 1.5rem; } .login-form { padding: 15px; } .form-group { margin-bottom: 15px; } }
+    </style>
+</head>
+<body>
+
+<div class="admin-login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>⚙️ ADMINISTRATION</h1>
+            <p>Espace Réservé aux Administrateurs</p>
+        </div>
+
+        <div class="login-form">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email">📧 Email ou Téléphone</label>
+                    <input 
+                        type="text" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        placeholder="Entrez votre email ou numéro de téléphone"
+                        autocomplete="username"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">🔐 Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        placeholder="Entrez votre mot de passe"
+                        autocomplete="current-password"
+                    />
+                </div>
+
+                <div class="button-group">
+                    <button type="submit">Se Connecter</button>
+                    <a href="{{ url_for('home') }}">Annuler</a>
+                </div>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <p style="font-size: 0.9rem; color: #666;">
+                        <a href="{{ url_for('admin_forgot_password') }}" style="color: #667eea; text-decoration: none; font-weight: 500;">
+                            🔐 Mot de passe oublié?
+                        </a>
+                    </p>
+                </div>
+            </form>
+
+            <div class="login-warning">
+                <p>⚠️ Attention</p>
+                <p>Cet espace est réservé aux administrateurs. L'accès non autorisé est interdit.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

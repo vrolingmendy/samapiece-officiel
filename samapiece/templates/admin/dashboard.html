@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord Administrateur - Samapiece{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        padding-bottom: 80px;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .admin-header-left h2 {
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        margin: 0;
+        font-weight: 700;
+        border: none;
+        padding: 0;
+        color: white;
+    }
+
+    .admin-header-right a {
+        background: #ff5252;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .admin-header-right a:hover {
+        background: #ff1744;
+        transform: translateY(-2px);
+    }
+
+    .admin-container {
+        width: 100%;
+        padding: 20px 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+    }
+
+    .alert.success {
+        background-color: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+
+    .alert.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #e74c3c;
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .stat-card-icon {
+        font-size: clamp(2rem, 5vw, 3rem);
+        margin-bottom: 10px;
+    }
+
+    .stat-card-value {
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .stat-card-label {
+        font-size: clamp(0.85rem, 1.5vw, 1rem);
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .section-title {
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        color: #333;
+        margin: 25px 0 15px 0;
+        padding: 0;
+        border: none;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        font-weight: 600;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .action-btn-icon {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+    }
+
+    .action-btn.blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .action-btn.green {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+
+    .action-btn.red {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .quick-access {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .quick-access-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .quick-access-item {
+        margin: 0;
+    }
+
+    .quick-access-item a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 15px;
+        background: #f9f9f9;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e0e0;
+    }
+
+    .quick-access-item a:hover {
+        background: #f0f0f0;
+        border-color: #667eea;
+        padding-left: 20px;
+    }
+
+    .quick-access-item a span:first-child {
+        font-size: clamp(1.2rem, 2vw, 1.6rem);
+    }
+
+    .quick-access-item a span:last-child {
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    }
+
+    @media (max-width: 768px) {
+        .admin-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .admin-header-left {
+            width: 100%;
+        }
+
+        .admin-header-right {
+            width: 100%;
+        }
+
+        .admin-header-right a {
+            width: 100%;
+        }
+
+        .stats-container {
+            grid-template-columns: 1fr;
+        }
+
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-access-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-header">
+    <div class="admin-header-left">
+        <h2>⚙️ ADMINISTRATION</h2>
+    </div>
+    <div class="admin-header-right">
+        <a href="{{ url_for('admin_logout') }}">🚪 Déconnexion</a>
+    </div>
+</div>
+
+<div class="admin-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2 class="section-title">📊 Statistiques</h2>
+    <div class="stats-container">
+        <div class="stat-card">
+            <span class="stat-card-icon">📦</span>
+            <div class="stat-card-value">{{ stats.total_items }}</div>
+            <div class="stat-card-label">Objets Perdus</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-card-icon">⏳</span>
+            <div class="stat-card-value">{{ stats.pending }}</div>
+            <div class="stat-card-label">En Attente</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-card-icon">🔄</span>
+            <div class="stat-card-value">{{ stats.in_progress }}</div>
+            <div class="stat-card-label">En Cours</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-card-icon">✓</span>
+            <div class="stat-card-value">{{ stats.delivered }}</div>
+            <div class="stat-card-label">Livrés</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-card-icon">📁</span>
+            <div class="stat-card-value">{{ stats.archived }}</div>
+            <div class="stat-card-label">Archivés</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-card-icon">👥</span>
+            <div class="stat-card-value">{{ stats.total_users }}</div>
+            <div class="stat-card-label">Utilisateurs</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">⚡ Actions rapides</h2>
+    <div class="actions-grid">
+        <a href="{{ url_for('admin_documents_perdus') }}" class="action-btn blue">
+            <span class="action-btn-icon">📄</span>
+            Voir les documents déclarés
+        </a>
+        <a href="{{ url_for('admin_create_lost_item') }}" class="action-btn green">
+            <span class="action-btn-icon">➕</span>
+            Ajouter un objet
+        </a>
+        <a href="{{ url_for('admin_users') }}" class="action-btn red">
+            <span class="action-btn-icon">👥</span>
+            Gérer les Utilisateurs
+        </a>
+    </div>
+
+    <h2 class="section-title">🔗 Accès Rapides</h2>
+    <div class="quick-access">
+        <ul class="quick-access-list">
+            <li class="quick-access-item">
+                <a href="{{ url_for('admin_lost_items', status='en attente') }}">
+                    <span>👉</span>
+                    <span>En Attente</span>
+                </a>
+            </li>
+            <li class="quick-access-item">
+                <a href="{{ url_for('admin_lost_items', status='en cours') }}">
+                    <span>👉</span>
+                    <span>En Cours</span>
+                </a>
+            </li>
+            <li class="quick-access-item">
+                <a href="{{ url_for('admin_lost_items', status='archived') }}">
+                    <span>👉</span>
+                    <span>Archivés</span>
+                </a>
+            </li>
+            <li class="quick-access-item">
+                <a href="{{ url_for('admin_users') }}">
+                    <span>👉</span>
+                    <span>Utilisateurs</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

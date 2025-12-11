@@ -116,7 +116,7 @@
     .document-card:hover .document-image-container img {
         transform: scale(1.05);
     }
-    
+
     .document-image-placeholder {
         width: 100%;
         height: 250px;
@@ -125,6 +125,72 @@
         align-items: center;
         justify-content: center;
         font-size: 3em;
+    }
+
+    /* Récompenses */
+    .rewards-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .reward-card {
+        background: #fff;
+        border: 1px solid #e5edf6;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 10px 26px rgba(15,23,42,0.08);
+        text-align: center;
+    }
+    .reward-card .icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+    .reward-green { background: #f0fff4; border-color: #c8f0d5; }
+    .reward-green .icon { background: #d9f7e5; color: #15803d; }
+    .reward-green .amount { color: #15803d; }
+    .reward-yellow { background: #fffbee; border-color: #f8e9b8; }
+    .reward-yellow .icon { background: #fff3c8; color: #b45309; }
+    .reward-yellow .amount { color: #b45309; }
+    .reward-gray { background: #f8fbff; border-color: #e5edf6; }
+    .reward-gray .icon { background: #eceff4; color: #334155; }
+    .reward-gray .amount { color: #1f2937; }
+    .reward-card h3 { margin: 6px 0; font-size: 1rem; color: #0f172a; }
+    .reward-card .amount { font-size: 1.8rem; font-weight: 800; margin: 6px 0; }
+    .reward-card .label { color: #4b5563; font-weight: 600; letter-spacing: 0.02em; }
+    .reward-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border: 1px solid #e5edf6;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    }
+    .reward-table thead {
+        background: #f9fbff;
+        color: #0f172a;
+    }
+    .reward-table th, .reward-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e5edf6;
+        text-align: left;
+    }
+    .reward-table tr:last-child td { border-bottom: none; }
+    .pill-status {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(234,179,8,0.12);
+        color: #a16207;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-block;
     }
     
     .document-info {
@@ -174,16 +240,12 @@
     
     <!-- TABS NAVIGATION -->
     <div class="profile-tabs">
-        <button class="profile-tab-button active" onclick="showProfileTab('profil', event)">
-            👤 Mon Profil
-        </button>
-        <button class="profile-tab-button" onclick="showProfileTab('objets', event)">
-            📦 Objets Déclarés
-        </button>
-        <button class="profile-tab-button" onclick="showProfileTab('recuperation', event)">
-            🔑 Code de Récupération
-        </button>
+        <button class="profile-tab-button active" onclick="showProfileTab('profil', event)"> Mon Profil</button>
+        <button class="profile-tab-button" onclick="showProfileTab('objets', event)"> Objets dclars</button>
+        <button class="profile-tab-button" onclick="showProfileTab('recuperation', event)"> Code de rcupration</button>
+        <button class="profile-tab-button" onclick="showProfileTab('recompenses', event)"> Rcompenses</button>
     </div>
+
     
     <!-- TAB 1: MON PROFIL -->
     <div id="profil" class="profile-tab-content active">
@@ -204,7 +266,7 @@
                 <div class="info-item">
                     <div class="info-label">Téléphone</div>
                     <div class="info-value">
-                        {% if user.code_pays %}{{ user.code_pays }} {% endif %}{{ user.telephone }}
+                        {{ user.telephone }}
                     </div>
                 </div>
             {% endif %}
@@ -240,12 +302,12 @@
                     <div class="document-card">
                         <div class="document-image-container">
                             {% if doc.photo_path %}
-                                <img src="{{ url_for('uploaded_file', filename=doc.photo_path.split('/')[-1]) }}" alt="{{ doc.type_piece }}" loading="lazy">
+                                <img src="{{ url_for('uploaded_file', filename=doc.photo_path.replace('\\','/').split('/')[-1]) }}" alt="{{ doc.type_piece }}" loading="lazy" onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/samapiece-logo.png') }}'; this.style.objectFit='contain';">
                             {% else %}
-                                <div class="document-image-placeholder">📄</div>
+                                <div class="document-placeholder"></div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="document-info">
                             <div class="document-type">{{ doc.type_piece }}</div>
                             
@@ -309,7 +371,7 @@
             </form>
             
             <div style="margin-top: 30px; padding: 20px; background-color: #d4edda; border-radius: 8px; border-left: 4px solid #27ae60;">
-                <h4 style="color: #155724; margin-bottom: 10px;">💡 Comment ça fonctionne?</h4>
+                <h4 style="color: #155724; margin-bottom: 10px;">💡 Comment ça fonctionne</h4>
                 <ul style="color: #155724; margin: 0; padding-left: 20px;">
                     <li>Chaque objet déclaré reçoit un code de récupération unique</li>
                     <li>Le propriétaire de l'objet perdu utilise ce code pour le récupérer</li>
@@ -318,7 +380,64 @@
             </div>
         </div>
     </div>
-</div>
+
+    <!-- TAB 4: RECOMPENSES -->
+    <div id="recompenses" class="profile-tab-content">
+        <h3 style="margin-bottom: 8px;">Mes Récompenses</h3>
+        <p style="margin-bottom: 16px; color: #4b5563;">Gérez vos récompenses et effectuez vos retraits</p>
+
+        <div class="rewards-summary">
+            <div class="reward-card reward-green">
+                <div class="icon">🏅</div>
+                <div class="amount">0 FCFA</div>
+                <div class="label">Disponible</div>
+            </div>
+            <div class="reward-card reward-yellow">
+                <div class="icon">⏰</div>
+                <div class="amount">0 FCFA</div>
+                <div class="label">En attente</div>
+            </div>
+            <div class="reward-card reward-gray">
+                <div class="icon">$</div>
+                <div class="amount">0 FCFA</div>
+                <div class="label">Total récupéré</div>
+            </div>
+        </div>
+
+        <table class="reward-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Nom</th>
+                    <th>R?compense (37%)</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in user_documents %}
+                    {% set lower = doc.type_piece.lower() if doc.type_piece else '' %}
+                    {% if 'identit' in lower %}
+                        {% set price = 2500 %}
+                    {% elif 'sejour' in lower %}
+                        {% set price = 1500 %}
+                    {% else %}
+                        {% set price = 1000 %}
+                    {% endif %}
+                    {% set amount = (price * 0.37) | round(0, 'floor') %}
+                    <tr>
+                        <td>{{ doc.type_piece }}</td>
+                        <td>{{ doc.nom }} {{ doc.prenom }}</td>
+                        <td><strong>{{ amount }} FCFA</strong></td>
+                        <td><span class="pill-status">En attente</span></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; color:#4b5563;">Aucun document d?clar? pour l'instant.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 <div style="margin-top: 40px; text-align: center;">
     <a href="{{ url_for('home') }}" class="btn" style="background-color: #95a5a6;">

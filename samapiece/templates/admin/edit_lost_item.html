@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Éditer Objet Perdu - Samapiece{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 20px auto; padding: 20px;">
+    <div style="border-bottom: 2px solid #c0392b; padding-bottom: 15px; margin-bottom: 30px;">
+        <h1 style="color: #c0392b; margin: 0;">✏️ Éditer l'Objet Perdu</h1>
+        <p style="color: #7f8c8d; margin: 5px 0 0 0;">Référence: <strong>{{ item.reference }}</strong></p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" style="margin-bottom: 15px;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" style="background: #f8f9fa; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c0392b;">
+            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">Informations Actuelles</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Déclarant</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.declarant }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Référence</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.reference }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Créé le</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.date_creation }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Modifié le</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.date_modification }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db;">
+            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">Changement de Statut</h3>
+            
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="status" style="font-weight: bold; color: #2c3e50;">Nouveau Statut *</label>
+                <select id="status" name="status" required style="width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 5px; font-size: 1em; box-sizing: border-box;">
+                    <option value="en attente" {% if item.status == 'en attente' %}selected{% endif %}>
+                        ⏳ En Attente - Document déclaré, en attente de récupération
+                    </option>
+                    <option value="en cours" {% if item.status == 'en cours' %}selected{% endif %}>
+                        🔄 En Cours - Demande de récupération en cours
+                    </option>
+                    <option value="livrer" {% if item.status == 'livrer' %}selected{% endif %}>
+                        ✓ Livrer - Document restitué au propriétaire
+                    </option>
+                </select>
+            </div>
+
+            <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                <p style="margin: 0; color: #2c3e50; font-size: 0.9em;">
+                    <strong>Statut Actuel:</strong> 
+                    {% set status_color_map = {'en attente': '#f39c12', 'en cours': '#9b59b6', 'livrer': '#27ae60'} %}
+                    <span style="background: {{ status_color_map.get(item.status, '#95a5a6') }}; color: white; padding: 3px 8px; border-radius: 4px; display: inline-block;">
+                        {{ item.status }}
+                    </span>
+                </p>
+                <p style="margin: 8px 0 0 0; color: #7f8c8d; font-size: 0.85em;">
+                    Note: Quand vous mettez le statut à "Livrer", l'objet sera automatiquement archivé.
+                </p>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
+            <h3 style="margin: 0 0 15px 0; color: #2c3e50;">Détails de l'Objet</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Nom</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.nom }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Prénom</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.prenom }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Date de Naissance</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.date_naissance }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Lieu de Naissance</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.lieu_naissance }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Numéro de Document</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.numero }}</p>
+                </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #7f8c8d;">Récompense</label>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; color: #2c3e50;">{{ item.recompense if item.recompense else 'Non spécifiée' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group" style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" style="flex: 1; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1em;">
+                ✓ Mettre à Jour le Statut
+            </button>
+            <a href="{{ url_for('admin_lost_items') }}" style="flex: 1; padding: 12px; background: #95a5a6; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

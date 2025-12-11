@@ -3,50 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Samapiece - Récupération de Documents{% endblock %}</title>
+    <title>{% block title %}Samapiece - R?cup?ration de documents{% endblock %}</title>
     <style>
+        :root {
+            --accent: #00b7ff;
+            --accent-2: #0ea5e9;
+            --dark: #0f172a;
+            --muted: #425466;
+            --bg: #f9fbff;
+            --surface: #ffffff;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
+        html, body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: #ffffff;
+            color: var(--dark);
             line-height: 1.6;
+            padding-bottom: 80px;
         }
         
         header {
-            background-color: #2c3e50;
-            color: white;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            color: var(--surface);
             padding: 20px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 10;
         }
         
         header h1 {
             text-align: center;
-            font-size: 2.5em;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             margin: 0;
+            font-weight: 700;
+        }
+
+        header p {
+            text-align: center;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            opacity: 0.95;
+            margin-top: 5px;
         }
         
+        /* Top Navigation Menu */
         nav {
-            background-color: #34495e;
-            padding: 10px 0;
-            text-align: center;
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-bottom: 1px solid #e5edf6;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+            padding: 12px 18px;
+            z-index: 100;
+            box-shadow: 0 6px 20px rgba(15,23,42,0.08);
         }
         
         nav a {
-            color: white;
+            color: #0f172a;
             text-decoration: none;
-            padding: 10px 20px;
-            display: inline-block;
-            transition: background-color 0.3s;
+            padding: 10px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+            transition: all 0.25s ease;
+            border-radius: 10px;
         }
         
+        nav a.active,
         nav a:hover {
-            background-color: #2c3e50;
+            color: var(--accent);
+            font-weight: 700;
+            background: rgba(14,165,233,0.12);
+        }
+
+        nav a.logout {
+            color: #e74c3c;
+        }
+
+        nav a.logout:hover {
+            color: #c0392b;
+            background: rgba(231,76,60,0.08);
+        }
+
+        nav a span.icon {
+            font-size: clamp(1rem, 2vw, 1.2rem);
         }
         
         .container {
@@ -56,10 +106,10 @@
         }
         
         .content {
-            background-color: white;
+            background-color: var(--surface);
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(15,23,42,0.08);
         }
         
         .alerts {
@@ -320,15 +370,58 @@
     </header>
     
     <nav>
-        <a href="{{ url_for('home') }}">Accueil</a>
-        <a href="{{ url_for('declare') }}">Déclarer un document</a>
-        <a href="{{ url_for('search') }}">Rechercher un document</a>
-        
-        {% if session.get('user_id') %}
-            <a href="{{ url_for('profile') }}" style="background-color: #3498db;">👤 Mon Profil</a>
-            <a href="{{ url_for('logout') }}" style="background-color: #e74c3c;">Déconnexion</a>
+        {% if session.get('is_admin') %}
+            <!-- Menu para Adminsitradores -->
+            <a href="{{ url_for('admin_dashboard') }}" class="{% if request.path == '/admin/dashboard' %}active{% endif %}">
+                <span class="icon">📊</span>
+                <span>Tableau</span>
+            </a>
+            <a href="{{ url_for('admin_lost_items') }}" class="{% if request.path == '/admin/lost-items' %}active{% endif %}">
+                <span class="icon">📋</span>
+                <span>Objets</span>
+            </a>
+            <a href="{{ url_for('admin_users') }}" class="{% if request.path == '/admin/users' %}active{% endif %}">
+                <span class="icon">👥</span>
+                <span>Utilisateurs</span>
+            </a>
+            <a href="{{ url_for('admin_create_lost_item') }}" class="{% if request.path == '/admin/create-lost-item' %}active{% endif %}">
+                <span class="icon">➕</span>
+                <span>Ajouter</span>
+            </a>
+            <a href="{{ url_for('admin_logout') }}" class="logout">
+                <span class="icon">🚪</span>
+                <span>Quitter</span>
+            </a>
         {% else %}
-            <a href="{{ url_for('register') }}" style="background-color: #27ae60;">Se connecter</a>
+            <!-- Menu pour Utilisateurs Publics -->
+            <a href="{{ url_for('home') }}" class="{% if request.path == '/' %}active{% endif %}">
+                <span class="icon">🏠</span>
+                <span>Accueil</span>
+            </a>
+            <a href="{{ url_for('declare') }}" class="{% if request.path == '/declare' %}active{% endif %}">
+                <span class="icon">📄</span>
+                <span>Déclarer</span>
+            </a>
+            <a href="{{ url_for('search') }}" class="{% if request.path == '/search' %}active{% endif %}">
+                <span class="icon">🔍</span>
+                <span>Rechercher</span>
+            </a>
+            
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('profile') }}" class="{% if request.path == '/profile' %}active{% endif %}">
+                    <span class="icon">👤</span>
+                    <span>Profil</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="logout">
+                    <span class="icon">🚪</span>
+                    <span>Quitter</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="{% if request.path == '/register' %}active{% endif %}">
+                    <span class="icon">✍️</span>
+                    <span>S'inscrire</span>
+                </a>
+            {% endif %}
         {% endif %}
     </nav>
     

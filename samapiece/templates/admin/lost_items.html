@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion Objets Perdus - Samapiece{% endblock %}
+
+{% block content %}
+<style>
+    .admin-lost-items {
+        width: 100%;
+        min-height: 100vh;
+        background-color: #f5f7fa;
+        padding: 20px;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 25px 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .page-actions a {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+    }
+
+    .page-actions a:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+    }
+
+    .alert.success {
+        background-color: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+
+    .alert.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #e74c3c;
+    }
+
+    .filter-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-section h3 {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        color: #2c3e50;
+        margin: 0 0 15px 0;
+        font-weight: 600;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 2vw, 1rem);
+        transition: all 0.3s ease;
+        border: 2px solid #e0e0e0;
+        background: white;
+        color: #2c3e50;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    .items-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .items-table thead {
+        background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+        color: white;
+    }
+
+    .items-table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: clamp(0.75rem, 2vw, 0.95rem);
+    }
+
+    .items-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ecf0f1;
+        font-size: clamp(0.8rem, 2vw, 0.95rem);
+    }
+
+    .items-table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: white;
+    }
+
+    .status-pending { background: #f39c12; }
+    .status-progress { background: #9b59b6; }
+    .status-delivered { background: #27ae60; }
+    .status-archived { background: #95a5a6; }
+
+    .edit-btn {
+        background: #3498db;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .edit-btn:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    .empty-message {
+        background: #d5f4e6;
+        padding: 30px 20px;
+        border-radius: 10px;
+        border-left: 4px solid #27ae60;
+        text-align: center;
+        color: #27ae60;
+        font-weight: 600;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+    }
+
+    @media (max-width: 768px) {
+        .admin-lost-items { padding: 15px; }
+        .page-header { flex-direction: column; text-align: center; }
+        .page-actions { justify-content: center; width: 100%; }
+        .items-table th:nth-child(n+5), .items-table td:nth-child(n+5) { display: none; }
+    }
+
+    @media (max-width: 480px) {
+        .admin-lost-items { padding: 10px; }
+        .page-header h1 { font-size: 1.3rem; }
+        .items-table th:nth-child(n+4), .items-table td:nth-child(n+4) { display: none; }
+    }
+</style>
+
+<div class="admin-lost-items">
+    <div class="page-header">
+        <h1>📋 Objets Perdus</h1>
+        <div class="page-actions">
+            <a href="{{ url_for('admin_dashboard') }}">← Tableau de Bord</a>
+            <a href="{{ url_for('admin_create_lost_item') }}">➕ Ajouter</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Filtres -->
+    <div class="filter-section">
+        <h3>Filtrer par Statut</h3>
+        <div class="filter-buttons">
+            <a href="{{ url_for('admin_lost_items', status='all') }}" class="filter-btn {% if current_filter == 'all' %}active{% endif %}">Todos</a>
+            <a href="{{ url_for('admin_lost_items', status='en attente') }}" class="filter-btn {% if current_filter == 'en attente' %}active{% endif %}">En Attente</a>
+            <a href="{{ url_for('admin_lost_items', status='en cours') }}" class="filter-btn {% if current_filter == 'en cours' %}active{% endif %}">En Cours</a>
+            <a href="{{ url_for('admin_lost_items', status='livrer') }}" class="filter-btn {% if current_filter == 'livrer' %}active{% endif %}">Livrés</a>
+            <a href="{{ url_for('admin_lost_items', status='archived') }}" class="filter-btn {% if current_filter == 'archived' %}active{% endif %}">Archivés</a>
+        </div>
+    </div>
+
+    <!-- Tableau des Objets -->
+    {% if items %}
+        <div class="items-container">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Référence</th>
+                        <th>Déclarant</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Numéro</th>
+                        <th>Date Naiss.</th>
+                        <th>Lieu Naiss.</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-message">
+            ✓ Aucun objet trouvé pour ce statut
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

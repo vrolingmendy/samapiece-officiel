@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}Détails de l'Alerte - Admin Samapiece{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        padding-bottom: 80px;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .admin-header-left h2 {
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        margin: 0;
+        font-weight: 700;
+        border: none;
+        padding: 0;
+        color: white;
+    }
+
+    .admin-container {
+        width: 100%;
+        padding: 20px 15px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: #f0f0f0;
+        color: #333;
+        text-decoration: none;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .btn-back:hover {
+        background: #e0e0e0;
+        transform: translateX(-4px);
+    }
+
+    .detail-card {
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .detail-section {
+        margin-bottom: 30px;
+    }
+
+    .detail-section h3 {
+        font-size: clamp(1.2rem, 2vw, 1.5rem);
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+    }
+
+    .detail-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 20px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #667eea;
+        font-size: clamp(0.9rem, 1.5vw, 1rem);
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        color: #333;
+        font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+        padding: 10px;
+        background: #f9f9f9;
+        border-radius: 6px;
+    }
+
+    .email-section {
+        background: #ecf3ff;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .correspondances-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .correspondance-card {
+        background: #f9f9f9;
+        border: 2px solid #27ae60;
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .correspondance-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 16px rgba(39, 174, 96, 0.2);
+    }
+
+    .correspondance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .correspondance-badge {
+        background: #27ae60;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+        font-weight: 600;
+    }
+
+    .correspondance-info p {
+        margin: 8px 0;
+        font-size: clamp(0.9rem, 1.5vw, 1rem);
+    }
+
+    .correspondance-info label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .declarant-mini {
+        background: white;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 12px;
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .contact-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .contact-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .detail-row {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-card {
+            padding: 20px;
+        }
+
+        .correspondances-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-header">
+    <div class="admin-header-left">
+        <h2>🔍 DÉTAILS DE L'ALERTE</h2>
+    </div>
+</div>
+
+<div class="admin-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <a href="{{ url_for('admin_alertes') }}" class="btn-back">← Retour aux Alertes</a>
+
+    <div class="detail-card">
+        <div class="detail-section">
+            <h3>🔔 Informations de l'Alerte</h3>
+            
+            <div class="detail-row">
+                <div class="detail-item">
+                    <span class="detail-label">Type de Document</span>
+                    <span class="detail-value">{{ alerte.type_piece }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date de Création</span>
+                    <span class="detail-value">{{ alerte.date_creation }}</span>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-item">
+                    <span class="detail-label">Nom</span>
+                    <span class="detail-value">{{ alerte.nom }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Prénom</span>
+                    <span class="detail-value">{{ alerte.prenom }}</span>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-item">
+                    <span class="detail-label">Date de Naissance</span>
+                    <span class="detail-value">{{ alerte.date_naissance }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Lieu de Naissance</span>
+                    <span class="detail-value">{{ alerte.lieu_naissance }}</span>
+                </div>
+            </div>
+
+            <div class="email-section">
+                <h4 style="margin-top: 0; color: #2c5aa0;">📧 Notification à:</h4>
+                <p style="font-size: clamp(0.95rem, 1.5vw, 1.1rem); color: #2c5aa0; font-weight: 600;">
+                    {{ alerte.email }}
+                </p>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>✓ Correspondances Trouvées</h3>
+            
+            {% if correspondances %}
+                <p style="color: #27ae60; font-weight: 600; margin-bottom: 20px;">
+                    ✓ {{ correspondances|length }} document(s) correspondant(s) trouvé(s)
+                </p>
+                
+                <div class="correspondances-grid">
+                    {% for doc in correspondances %}
+                        <div class="correspondance-card">
+                            <div class="correspondance-header">
+                                <span class="correspondance-badge">✓ Correspondance</span>
+                            </div>
+
+                            <div class="correspondance-info">
+                                <p><label>Type:</label> {{ doc.type_piece }}</p>
+                                <p><label>Nom:</label> {{ doc.nom }}</p>
+                                <p><label>Prénom:</label> {{ doc.prenom }}</p>
+                                <p><label>Date déclaration:</label> {{ doc.date_declaration }}</p>
+                            </div>
+
+                            <div class="declarant-mini">
+                                <strong>Déclarant:</strong>
+                                <p>📧 {{ doc.declarant_email }}</p>
+                                <p>📱 {{ doc.declarant_telephone }}</p>
+                                
+                                <a href="mailto:{{ doc.declarant_email }}?subject=Document%20correspondant%20à%20votre%20alerte" 
+                                   class="contact-button" style="width: calc(100% - 40px); text-align: center; margin: 10px 0;">
+                                    ✉️ Contacter
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <p>Aucun document correspondant pour cette alerte pour le moment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

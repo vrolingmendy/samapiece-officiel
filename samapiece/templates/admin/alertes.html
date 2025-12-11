@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Alertes - Admin Samapiece{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        padding-bottom: 80px;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .admin-header-left h2 {
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        margin: 0;
+        font-weight: 700;
+        border: none;
+        padding: 0;
+        color: white;
+    }
+
+    .admin-container {
+        width: 100%;
+        padding: 20px 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        color: #333;
+        margin: 25px 0 15px 0;
+        padding: 0;
+        border: none;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+    }
+
+    .alertes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .alerte-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border-top: 4px solid #667eea;
+    }
+
+    .alerte-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .alerte-card.has-match {
+        border-top-color: #27ae60;
+    }
+
+    .alerte-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .alerte-type {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: clamp(0.85rem, 1.5vw, 1rem);
+        font-weight: 600;
+    }
+
+    .match-badge {
+        background: #27ae60;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+        font-weight: 600;
+    }
+
+    .match-badge.no-match {
+        background: #95a5a6;
+    }
+
+    .alerte-info {
+        margin: 15px 0;
+    }
+
+    .alerte-info p {
+        margin: 8px 0;
+        font-size: clamp(0.9rem, 1.5vw, 1rem);
+    }
+
+    .alerte-info label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .email-info {
+        background: #ecf3ff;
+        padding: 12px;
+        border-left: 4px solid #667eea;
+        border-radius: 4px;
+        margin: 12px 0;
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    }
+
+    .alerte-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .btn-detail {
+        flex: 1;
+        padding: 10px 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-detail:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .alert-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .stat-label {
+        font-size: clamp(0.85rem, 1.5vw, 1rem);
+        color: #666;
+        margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+        .admin-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .alertes-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-header">
+    <div class="admin-header-left">
+        <h2>🔔 SYSTÈME D'ALERTES</h2>
+    </div>
+</div>
+
+<div class="admin-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2 class="section-title">📊 Statistiques des Alertes</h2>
+    <div class="alert-stats">
+        <div class="stat-box">
+            <div class="stat-number">{{ alertes|length }}</div>
+            <div class="stat-label">Alertes Totales</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ alertes|selectattr('nombre_correspondances', '>', 0)|list|length }}</div>
+            <div class="stat-label">Alertes avec Correspondances</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ alertes|map(attribute='nombre_correspondances')|sum }}</div>
+            <div class="stat-label">Documents Correspondants</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">🔔 Toutes les Alertes</h2>
+
+    {% if alertes %}
+        <div class="alertes-grid">
+            {% for alerte in alertes %}
+                <div class="alerte-card {% if alerte.nombre_correspondances > 0 %}has-match{% endif %}">
+                    <div class="alerte-header">
+                        <span class="alerte-type">{{ alerte.type_piece }}</span>
+                        {% if alerte.nombre_correspondances > 0 %}
+                            <span class="match-badge">✓ {{ alerte.nombre_correspondances }} correspondance(s)</span>
+                        {% else %}
+                            <span class="match-badge no-match">Aucune correspondance</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="alerte-info">
+                        <p><label>Nom:</label> {{ alerte.nom }}</p>
+                        <p><label>Prénom:</label> {{ alerte.prenom }}</p>
+                        <p><label>Date de naissance:</label> {{ alerte.date_naissance }}</p>
+                        <p><label>Lieu de naissance:</label> {{ alerte.lieu_naissance }}</p>
+                    </div>
+
+                    <div class="email-info">
+                        <strong>📧 Notification à:</strong>
+                        <p>{{ alerte.email }}</p>
+                    </div>
+
+                    <div class="alerte-actions">
+                        <a href="{{ url_for('admin_alerte_detail', alerte_id=alerte._id) }}" class="btn-detail">
+                            ℹ️ Voir Détails
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🔔</div>
+            <p>Aucune alerte n'a été créée pour le moment.</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
