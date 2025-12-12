@@ -383,24 +383,40 @@
 
     <!-- TAB 4: RECOMPENSES -->
     <div id="recompenses" class="profile-tab-content">
-        <h3 style="margin-bottom: 8px;">Mes Récompenses</h3>
-        <p style="margin-bottom: 16px; color: #4b5563;">Gérez vos récompenses et effectuez vos retraits</p>
+        {% set total_en_attente = 0 %}
+        {% set total_disponible = 0 %}
+        {% set total_recupere = 0 %}
+        {% for doc in user_documents %}
+            {% set lower = doc.type_piece.lower() if doc.type_piece else '' %}
+            {% if 'identit' in lower %}
+                {% set price = 2500 %}
+            {% elif 'sejour' in lower %}
+                {% set price = 1500 %}
+            {% else %}
+                {% set price = 1000 %}
+            {% endif %}
+            {% set amount = (price * 0.35) | round(0, 'floor') %}
+            {% set total_en_attente = total_en_attente + amount %}
+        {% endfor %}
+
+        <h3 style="margin-bottom: 8px;">Mes R?compenses</h3>
+        <p style="margin-bottom: 16px; color: #4b5563;">G?rez vos r?compenses et effectuez vos retraits</p>
 
         <div class="rewards-summary">
             <div class="reward-card reward-green">
-                <div class="icon">🏅</div>
-                <div class="amount">0 FCFA</div>
+                <div class="icon">??</div>
+                <div class="amount">{{ total_disponible }} FCFA</div>
                 <div class="label">Disponible</div>
             </div>
             <div class="reward-card reward-yellow">
-                <div class="icon">⏰</div>
-                <div class="amount">0 FCFA</div>
+                <div class="icon">?</div>
+                <div class="amount">{{ total_en_attente }} FCFA</div>
                 <div class="label">En attente</div>
             </div>
             <div class="reward-card reward-gray">
                 <div class="icon">$</div>
-                <div class="amount">0 FCFA</div>
-                <div class="label">Total récupéré</div>
+                <div class="amount">{{ total_recupere }} FCFA</div>
+                <div class="label">Total r?cup?r?</div>
             </div>
         </div>
 
@@ -409,7 +425,7 @@
                 <tr>
                     <th>Type</th>
                     <th>Nom</th>
-                    <th>R?compense (37%)</th>
+                    <th>R?compense</th>
                     <th>Statut</th>
                 </tr>
             </thead>
@@ -423,7 +439,7 @@
                     {% else %}
                         {% set price = 1000 %}
                     {% endif %}
-                    {% set amount = (price * 0.37) | round(0, 'floor') %}
+                    {% set amount = (price * 0.35) | round(0, 'floor') %}
                     <tr>
                         <td>{{ doc.type_piece }}</td>
                         <td>{{ doc.nom }} {{ doc.prenom }}</td>
@@ -438,6 +454,7 @@
             </tbody>
         </table>
     </div>
+</div>
 
 <div style="margin-top: 40px; text-align: center;">
     <a href="{{ url_for('home') }}" class="btn" style="background-color: #95a5a6;">
