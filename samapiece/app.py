@@ -189,7 +189,8 @@ class GestionnaireSécurité:
 # ============================================================
 
 app = Flask(__name__)
-app.secret_key = 'votre_cle_secrete_ici_changez_moi'  # A changer en production
+# Use env override for secret to avoid hardcoding in containers
+app.secret_key = os.environ.get('SECRET_KEY', 'votre_cle_secrete_ici_changez_moi')
 
 # Configuration du dossier d'uploads
 DOSSIER_UPLOAD = os.path.join(os.path.dirname(__file__), 'uploads')

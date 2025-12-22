@@ -214,3 +214,10 @@ Généré pour la plateforme Samapiece
 ---
 
 **Questions ou améliorations?** Modifiez le code source et adaptez-le à vos besoins!
+## Docker
+
+1. Copier `.env.example` en `.env` et renseigner les valeurs (SMTP, SECRET_KEY).
+2. Construire l'image : `docker compose build`.
+3. Lancer : `docker compose up -d` puis ouvrir http://localhost:5000.
+
+Les volumes montent `uploads/` et `data.json` pour persister les fichiers et les donn�es sur l'h�te.

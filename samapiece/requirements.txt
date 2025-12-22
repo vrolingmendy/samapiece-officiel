@@ -5,3 +5,5 @@ SQLAlchemy==2.0.21
 werkzeug==2.3.7
 python-dotenv==1.0.0
 itsdangerous==2.1.2
+pymongo==4.6.0
+Pillow==10.0.1
