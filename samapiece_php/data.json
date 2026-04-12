@@ -1,0 +1,30 @@
+{
+    "users": [],
+    "documents": [],
+    "lost_items": [],
+    "alerts": [],
+    "admins": [],
+    "login_tracking": {
+        "login_attempts_vrolingmendy0@gmail.com_12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0": {
+            "attempts": 2,
+            "first_attempt": "2026-04-11T18:32:20+02:00",
+            "locked_until": null
+        },
+        "login_attempts_vrolingmendes@gmail.com_12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0": {
+            "attempts": 0,
+            "first_attempt": "2026-04-11T18:33:27+02:00",
+            "locked_until": null
+        },
+        "login_attempts_+2217871345678_12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0": {
+            "attempts": 0,
+            "first_attempt": "2026-04-11T20:46:56+02:00",
+            "locked_until": null
+        },
+        "login_attempts_+2217871345670_12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0": {
+            "attempts": 0,
+            "first_attempt": "2026-04-11T21:22:27+02:00",
+            "locked_until": null
+        }
+    },
+    "security_logs": []
+}

@@ -1,0 +1,4 @@
+# Empêcher l’accès HTTP aux fichiers sensibles (Apache)
+<FilesMatch "^(\\.env|config\\.local\\.php)$">
+    Require all denied
+</FilesMatch>
