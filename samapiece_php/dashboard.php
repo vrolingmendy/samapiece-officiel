@@ -75,8 +75,8 @@ $page_title = 'Mon Dashboard - Samapiece';
             --muted: #425466;
             --bg: #f9fbff;
             --surface: #ffffff;
-            --green: #22c55e;
-            --green-dark: #16a34a;
+            --green: #128c7e;
+            --green-dark: #0e6b62;
             --ink: #0a0a0a;
             --line: #e5e5e5;
         }
@@ -302,12 +302,12 @@ $page_title = 'Mon Dashboard - Samapiece';
             background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
             color: #fff;
             border: none;
-            box-shadow: 0 10px 28px rgba(34, 197, 94, 0.35);
+            box-shadow: 0 10px 28px rgba(18, 140, 126, 0.35);
         }
 
         .btn-pill--primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 32px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 14px 32px rgba(18, 140, 126, 0.4);
         }
 
         .btn-pill--primary svg {
@@ -316,13 +316,13 @@ $page_title = 'Mon Dashboard - Samapiece';
 
         .btn-pill--secondary {
             background: var(--surface);
-            color: var(--ink);
-            border: 1px solid var(--line);
+            color: var(--green-dark);
+            border: 2px solid rgba(18, 140, 126, 0.35);
         }
 
         .btn-pill--secondary:hover {
-            border-color: #d4d4d4;
-            background: #fff;
+            border-color: var(--green);
+            background: #e8f5f3;
             transform: translateY(-2px);
         }
 
@@ -349,9 +349,9 @@ $page_title = 'Mon Dashboard - Samapiece';
             min-width: 0;
             padding: 12px 18px;
             border-radius: 999px;
-            border: 2px solid #e5edf6;
+            border: 2px solid #e5e7eb;
             background: var(--surface);
-            color: var(--dark);
+            color: var(--muted);
             font-weight: 700;
             font-size: clamp(0.85rem, 2.5vw, 1rem);
             cursor: pointer;
@@ -360,15 +360,16 @@ $page_title = 'Mon Dashboard - Samapiece';
         }
 
         .dashboard-tab-btn:hover {
-            border-color: #cbd5e1;
+            border-color: rgba(18, 140, 126, 0.4);
             background: #f8fafc;
+            color: var(--green-dark);
         }
 
         .dashboard-tab-btn.is-active {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
             border-color: transparent;
             color: #fff;
-            box-shadow: 0 8px 24px rgba(0, 183, 255, 0.25);
+            box-shadow: 0 8px 24px rgba(18, 140, 126, 0.35);
         }
 
         .dashboard-tab-panel {
@@ -477,8 +478,8 @@ $page_title = 'Mon Dashboard - Samapiece';
         }
 
         .flash-handover.ok {
-            background: #ecfdf5;
-            border: 1px solid #bbf7d0;
+            background: #e8f5f3;
+            border: 1px solid #b8dfd8;
             color: #166534;
         }
 
@@ -681,7 +682,7 @@ $page_title = 'Mon Dashboard - Samapiece';
             margin: 10px 0 0;
             padding: 10px 12px;
             background: linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, rgba(236, 253, 245, 0.6) 100%);
-            border: 1px solid rgba(34, 197, 94, 0.22);
+            border: 1px solid rgba(18, 140, 126, 0.22);
             border-radius: 10px;
         }
 
@@ -811,7 +812,7 @@ $page_title = 'Mon Dashboard - Samapiece';
         }
 
         .declaration-card__status--done {
-            color: #15803d;
+            color: #0e6b62;
         }
 
         .declaration-card__actions {
@@ -830,14 +831,16 @@ $page_title = 'Mon Dashboard - Samapiece';
             font-weight: 600;
             font-size: 0.92rem;
             text-decoration: none;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
             color: #fff;
-            transition: filter 0.2s, transform 0.15s;
+            box-shadow: 0 4px 14px rgba(18, 140, 126, 0.25);
+            transition: filter 0.2s, transform 0.15s, box-shadow 0.2s;
         }
 
         .declaration-card__link:hover {
             filter: brightness(1.05);
             transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(18, 140, 126, 0.35);
         }
 
         .declaration-empty {
@@ -860,14 +863,31 @@ $page_title = 'Mon Dashboard - Samapiece';
             font-size: 0.95rem;
         }
 
-        .declaration-empty a {
-            color: var(--accent-2);
-            font-weight: 600;
+        .declaration-empty__cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 26px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
             text-decoration: none;
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            border: none;
+            box-shadow: 0 6px 20px rgba(18, 140, 126, 0.35);
+            transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
         }
 
-        .declaration-empty a:hover {
-            text-decoration: underline;
+        .declaration-empty__cta:hover {
+            filter: brightness(1.06);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(18, 140, 126, 0.4);
+        }
+
+        .declaration-empty__cta:focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 3px;
         }
     </style>
 </head>
@@ -928,7 +948,7 @@ $page_title = 'Mon Dashboard - Samapiece';
                     <div class="declaration-empty">
                         <h3>Aucune déclaration pour l’instant</h3>
                         <p>Dès que vous déclarez un document perdu, il apparaîtra ici sous forme de carte.</p>
-                        <a href="declare.php">Déclarer un document</a>
+                        <a href="declare.php" class="declaration-empty__cta">Déclarer un document</a>
                     </div>
                 <?php else: ?>
                     <div class="declaration-cards">
@@ -1023,7 +1043,7 @@ $page_title = 'Mon Dashboard - Samapiece';
                     <div class="declaration-empty">
                         <h3>Aucune récupération</h3>
                         <p>Après une recherche, utilisez « Demander la récupération » sur un résultat : vos demandes et leur statut apparaissent ici.</p>
-                        <a href="search.php">Rechercher un document</a>
+                        <a href="search.php" class="declaration-empty__cta">Rechercher un document</a>
                     </div>
                 <?php else: ?>
                     <div class="declaration-cards">

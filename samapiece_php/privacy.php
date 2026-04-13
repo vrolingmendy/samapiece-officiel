@@ -15,8 +15,8 @@ $page_title = 'Politique de confidentialité - Samapiece';
             --ink: #0a0a0a;
             --muted: #6b7280;
             --line: #e5e7eb;
-            --green: #22c55e;
-            --green-dark: #16a34a;
+            --green: #128c7e;
+            --green-dark: #0e6b62;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
@@ -68,8 +68,8 @@ $page_title = 'Politique de confidentialité - Samapiece';
         .privacy-intro {
             padding: 16px 18px;
             border-radius: 12px;
-            background: #f0fdf4;
-            border: 1px solid rgba(34, 197, 94, 0.2);
+            background: #e8f5f3;
+            border: 1px solid rgba(18, 140, 126, 0.2);
             margin-bottom: 24px;
             font-size: 0.95rem;
             color: #166534;

@@ -90,8 +90,8 @@ $page_title = 'Mes informations - Samapiece';
             color: #991b1b;
         }
         .msg--success {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
+            background: #e8f5f3;
+            border: 1px solid #b8dfd8;
             color: #166534;
         }
         .msg--info {

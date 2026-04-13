@@ -149,7 +149,7 @@ $page_title = 'Mot de passe oublié - Samapiece';
             font-size: 0.95rem;
         }
         .message.error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-        .message.success { background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; }
+        .message.success { background: #d4efea; color: #0a5048; border: 1px solid #b8dfd8; }
         .btn {
             width: 100%;
             padding: 12px;

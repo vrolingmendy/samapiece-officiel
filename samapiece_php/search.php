@@ -127,9 +127,9 @@ if ($default_reminder_email === '' && is_logged_in()) {
         :root {
             --accent: #00b7ff;
             --accent-2: #0ea5e9;
-            --green: #22c55e;
-            --green-dark: #15803d;
-            --green-soft: #ecfdf5;
+            --green: #128c7e;
+            --green-dark: #0e6b62;
+            --green-soft: #e8f5f3;
             --dark: #0f172a;
             --muted: #425466;
             --bg: #f9fbff;
@@ -216,7 +216,7 @@ if ($default_reminder_email === '' && is_logged_in()) {
             left: -8%;
             bottom: -25%;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(18, 140, 126, 0.1) 0%, transparent 70%);
         }
 
         .search-section__inner {
@@ -367,7 +367,7 @@ if ($default_reminder_email === '' && is_logged_in()) {
             overflow-wrap: anywhere;
             word-break: break-word;
             background:
-                linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 252, 255, 0.99) 45%, rgba(240, 253, 244, 0.35) 100%);
+                linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 252, 255, 0.99) 45%, rgba(232, 245, 243, 0.45) 100%);
             border: 1px solid rgba(226, 232, 240, 0.95);
             box-shadow:
                 0 1px 0 rgba(255, 255, 255, 0.85) inset,
@@ -430,9 +430,9 @@ if ($default_reminder_email === '' && is_logged_in()) {
             font-size: 0.88rem;
             font-weight: 700;
             color: var(--green-dark);
-            background: linear-gradient(145deg, var(--green-soft) 0%, #d1fae5 100%);
-            border: 1px solid rgba(34, 197, 94, 0.28);
-            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.12);
+            background: linear-gradient(145deg, var(--green-soft) 0%, #d4efea 100%);
+            border: 1px solid rgba(18, 140, 126, 0.28);
+            box-shadow: 0 2px 10px rgba(18, 140, 126, 0.12);
         }
 
         .results-count__num {
@@ -463,7 +463,7 @@ if ($default_reminder_email === '' && is_logged_in()) {
             padding: clamp(18px, 3vw, 24px);
             border-radius: 18px;
             transition: transform 0.22s ease, box-shadow 0.22s ease;
-            background: linear-gradient(165deg, #ffffff 0%, #f8fafc 55%, #f0fdf4 130%);
+            background: linear-gradient(165deg, #ffffff 0%, #f8fafc 55%, #e8f5f3 130%);
             border: 1px solid rgba(226, 232, 240, 0.9);
             box-shadow: 0 4px 24px rgba(15, 23, 42, 0.05);
             overflow: hidden;
@@ -505,7 +505,7 @@ if ($default_reminder_email === '' && is_logged_in()) {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(160deg, #f8fafc 0%, #f0f9ff 40%, #ecfdf5 100%);
+            background: linear-gradient(160deg, #f8fafc 0%, #f0f9ff 40%, #ecf8f6 100%);
             border: 1px solid rgba(148, 163, 184, 0.35);
             box-shadow:
                 0 0 0 1px rgba(255, 255, 255, 0.9) inset,
@@ -686,7 +686,7 @@ if ($default_reminder_email === '' && is_logged_in()) {
             overflow: hidden;
             background:
                 radial-gradient(ellipse 80% 60% at 50% -10%, rgba(14, 165, 233, 0.12) 0%, transparent 55%),
-                radial-gradient(ellipse 70% 50% at 100% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse 70% 50% at 100% 80%, rgba(18, 140, 126, 0.1) 0%, transparent 50%),
                 linear-gradient(165deg, #ffffff 0%, #f8fafc 40%, #f0f9ff 100%);
             border: 1px solid rgba(226, 232, 240, 0.95);
             box-shadow:
@@ -765,9 +765,9 @@ if ($default_reminder_email === '' && is_logged_in()) {
         }
 
         .empty-state__hint--solo {
-            color: #065f46;
-            background: linear-gradient(135deg, rgba(209, 250, 229, 0.95) 0%, rgba(236, 253, 245, 0.8) 100%);
-            border-color: rgba(16, 185, 129, 0.35);
+            color: #0a5048;
+            background: linear-gradient(135deg, rgba(212, 239, 234, 0.95) 0%, rgba(236, 248, 246, 0.8) 100%);
+            border-color: rgba(18, 140, 126, 0.35);
         }
 
         .reminder-panel--featured {
@@ -779,7 +779,7 @@ if ($default_reminder_email === '' && is_logged_in()) {
             border-radius: 22px;
             overflow: hidden;
             background:
-                linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 252, 255, 0.99) 45%, rgba(240, 253, 244, 0.35) 100%);
+                linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 252, 255, 0.99) 45%, rgba(232, 245, 243, 0.45) 100%);
             color: var(--dark);
             box-shadow:
                 0 1px 0 rgba(255, 255, 255, 0.85) inset,
@@ -899,9 +899,9 @@ if ($default_reminder_email === '' && is_logged_in()) {
             font-size: 0.95rem;
         }
         .reminder-flash.ok {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
+            background: #d4efea;
+            color: #0a5048;
+            border: 1px solid #b8dfd8;
         }
         .reminder-flash.err {
             background: #fee2e2;

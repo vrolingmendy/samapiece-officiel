@@ -28,9 +28,9 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --green: #22c55e;
-            --green-dark: #16a34a;
-            --green-soft: #f0fdf4;
+            --green: #128c7e;
+            --green-dark: #0e6b62;
+            --green-soft: #e8f5f3;
             --ink: #0a0a0a;
             --muted: #6b7280;
             --line: #e5e5e5;
@@ -121,11 +121,11 @@ try {
             background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
             color: #fff;
             border: none;
-            box-shadow: 0 10px 28px rgba(34, 197, 94, 0.35);
+            box-shadow: 0 10px 28px rgba(18, 140, 126, 0.35);
         }
         .btn-pill--primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 32px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 14px 32px rgba(18, 140, 126, 0.4);
         }
         .btn-pill--primary svg {
             flex-shrink: 0;
@@ -194,7 +194,7 @@ try {
             height: min(200px, 48vw);
             top: -8%;
             right: -2%;
-            background: radial-gradient(circle, rgba(34, 197, 94, 0.55) 0%, transparent 68%);
+            background: radial-gradient(circle, rgba(18, 140, 126, 0.55) 0%, transparent 68%);
             animation: hero-orb-a 16s ease-in-out infinite;
         }
         .home-hero__visual::after {
@@ -233,13 +233,13 @@ try {
                 box-shadow:
                     0 24px 48px rgba(0, 0, 0, 0.06),
                     0 0 0 1px rgba(255, 255, 255, 0.6) inset,
-                    0 0 28px rgba(34, 197, 94, 0.12);
+                    0 0 28px rgba(18, 140, 126, 0.12);
             }
             50% {
                 box-shadow:
                     0 28px 52px rgba(0, 0, 0, 0.07),
                     0 0 0 1px rgba(255, 255, 255, 0.65) inset,
-                    0 0 40px rgba(34, 197, 94, 0.22),
+                    0 0 40px rgba(18, 140, 126, 0.22),
                     0 0 80px rgba(34, 211, 238, 0.08);
             }
         }
@@ -257,7 +257,7 @@ try {
             pointer-events: none;
             z-index: 4;
             opacity: 0.9;
-            box-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+            box-shadow: 0 0 12px rgba(18, 140, 126, 0.35);
             animation: hero-corner-flicker 4s ease-in-out infinite;
         }
         .home-hero__frame::after {
@@ -325,7 +325,7 @@ try {
         .home-hero__placeholder {
             aspect-ratio: 4/3;
             border-radius: 16px;
-            background: linear-gradient(145deg, var(--green-soft) 0%, #ecfdf5 50%, #f0fdf4 100%);
+            background: linear-gradient(145deg, var(--green-soft) 0%, #ecf8f6 50%, #e8f5f3 100%);
             display: grid;
             place-items: center;
             color: var(--green-dark);
@@ -388,7 +388,7 @@ try {
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: linear-gradient(135deg, var(--green-soft) 0%, #ecfdf5 100%);
+            background: linear-gradient(135deg, var(--green-soft) 0%, #ecf8f6 100%);
             color: var(--green-dark);
             display: grid;
             place-items: center;
@@ -461,7 +461,7 @@ try {
             border: 1px solid rgba(226, 232, 240, 0.95);
             box-shadow:
                 0 4px 6px -1px rgba(15, 23, 42, 0.06),
-                0 18px 48px rgba(34, 197, 94, 0.08),
+                0 18px 48px rgba(18, 140, 126, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
         .home-stats__tile--light::before {
@@ -471,7 +471,7 @@ try {
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--green), #86efac, var(--green-dark));
+            background: linear-gradient(90deg, var(--green), #7ccfc4, var(--green-dark));
             border-radius: 22px 22px 0 0;
         }
         .home-stats__tile--light::after {
@@ -481,7 +481,7 @@ try {
             right: -25%;
             width: 55%;
             aspect-ratio: 1;
-            background: radial-gradient(circle, rgba(34, 197, 94, 0.09) 0%, transparent 68%);
+            background: radial-gradient(circle, rgba(18, 140, 126, 0.09) 0%, transparent 68%);
             pointer-events: none;
         }
         .home-stats__tile--light .home-stats__value {
@@ -505,10 +505,10 @@ try {
         }
         /* Tuile 2 — verte */
         .home-stats__tile--green {
-            background: linear-gradient(145deg, #22c55e 0%, #16a34a 42%, #15803d 100%);
+            background: linear-gradient(145deg, #128c7e 0%, #107c71 42%, #0e6b62 100%);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow:
-                0 12px 32px rgba(22, 163, 74, 0.35),
+                0 12px 32px rgba(18, 140, 126, 0.35),
                 0 2px 0 rgba(255, 255, 255, 0.15) inset;
         }
         .home-stats__tile--green::before {

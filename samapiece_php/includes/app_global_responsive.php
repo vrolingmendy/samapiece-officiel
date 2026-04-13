@@ -91,11 +91,11 @@ body > .app-page-backdrop {
     pointer-events: none;
     /* Points : rayons entiers (1px) pour compatibilité navigateurs */
     background:
-        radial-gradient(ellipse 38% 48% at 18% 45%, rgba(34, 197, 94, 0.16) 0%, transparent 70%),
-        radial-gradient(ellipse 32% 55% at 48% 52%, rgba(22, 163, 74, 0.14) 0%, transparent 68%),
-        radial-gradient(ellipse 40% 50% at 82% 42%, rgba(34, 197, 94, 0.14) 0%, transparent 72%),
+        radial-gradient(ellipse 38% 48% at 18% 45%, rgba(18, 140, 126, 0.16) 0%, transparent 70%),
+        radial-gradient(ellipse 32% 55% at 48% 52%, rgba(18, 140, 126, 0.14) 0%, transparent 68%),
+        radial-gradient(ellipse 40% 50% at 82% 42%, rgba(18, 140, 126, 0.14) 0%, transparent 72%),
         radial-gradient(circle, rgba(21, 128, 61, 0.32) 1px, transparent 1px),
-        radial-gradient(circle, rgba(34, 197, 94, 0.18) 1px, transparent 1px);
+        radial-gradient(circle, rgba(18, 140, 126, 0.18) 1px, transparent 1px);
     background-size:
         auto,
         auto,

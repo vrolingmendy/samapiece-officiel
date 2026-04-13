@@ -231,222 +231,439 @@ $page_title = 'Inscription - Samapiece';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?></title>
     <?php require __DIR__ . '/includes/head_favicon.php'; ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent: #00b7ff;
-            --accent-2: #0ea5e9;
-            --dark: #0f172a;
-            --muted: #425466;
-            --bg: #f9fbff;
-            --surface: #ffffff;
+        body:has(.register-page) main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: clamp(8px, 2vw, 20px);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--dark);
-            line-height: 1.6;
-            min-height: 100vh;
+        .register-page {
+            --lp-accent: #128c7e;
+            --lp-accent-2: #0ea5e9;
+            --lp-violet: #7c3aed;
+            --lp-dark: #0f172a;
+            --lp-muted: #64748b;
+            --lp-line: #e5e7eb;
+            position: relative;
+            flex: 1 0 auto;
+            width: 100%;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(24px, 5vw, 48px) max(16px, env(safe-area-inset-left)) clamp(32px, 6vw, 64px) max(16px, env(safe-area-inset-right));
+            font-family: 'Outfit', system-ui, sans-serif;
+            color: var(--lp-dark);
         }
-        .container {
+        .register-page__container {
+            position: relative;
+            width: 100%;
             max-width: 520px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 0 auto;
         }
-        .register-form {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        .register-form.register-card {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid var(--lp-line);
+            border-radius: 24px;
+            padding: clamp(28px, 5vw, 40px);
+            box-shadow:
+                0 1px 3px rgba(15, 23, 42, 0.06),
+                0 12px 40px rgba(15, 23, 42, 0.08);
+        }
+        .register-card__brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .register-card__mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--lp-accent) 0%, var(--lp-accent-2) 100%);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 1.35rem;
+            box-shadow: 0 8px 24px rgba(18, 140, 126, 0.35);
+        }
+        .register-card__mark--logo {
+            width: auto;
+            max-width: min(200px, 85vw);
+            height: 44px;
+            padding: 4px 0;
+            background: transparent;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-card__mark--logo img {
+            display: block;
+            height: 36px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
         }
         .register-form h2 {
             text-align: center;
-            margin-bottom: 8px;
-            color: var(--dark);
+            font-size: clamp(1.45rem, 4vw, 1.65rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 6px;
+            color: var(--lp-dark);
+        }
+        .register-card__lead {
+            text-align: center;
+            font-size: 0.92rem;
+            color: var(--lp-muted);
+            font-weight: 500;
+            margin-bottom: 22px;
+            line-height: 1.45;
         }
         .mode-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #e5edf6;
-            padding-bottom: 12px;
+            gap: 6px;
+            padding: 5px;
+            margin-bottom: 22px;
+            background: rgba(15, 23, 42, 0.06);
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, 0.06);
         }
         .mode-tabs button {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #e5edf6;
-            background: #f8fafc;
-            border-radius: 8px;
+            text-align: center;
+            padding: 11px 12px;
+            border-radius: 999px;
+            border: none;
             cursor: pointer;
             font-weight: 600;
-            color: var(--muted);
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: var(--lp-muted);
+            background: transparent;
+            transition: color 0.2s, background 0.25s, box-shadow 0.25s;
+        }
+        .mode-tabs button:hover:not(.active) {
+            color: var(--lp-dark);
+            background: rgba(255, 255, 255, 0.5);
         }
         .mode-tabs button.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            color: var(--lp-dark);
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.04);
+        }
+        .mode-tabs button .tab-icon {
+            margin-right: 6px;
+            opacity: 0.92;
         }
         .mode-panel { display: none; }
         .mode-panel.active { display: block; }
-        .form-row { display: flex; gap: 10px; margin-bottom: 20px; }
-        .form-row .form-group { flex: 1; }
-        .form-group { margin-bottom: 20px; }
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 0;
+        }
+        .form-row .form-group { flex: 1; min-width: 0; }
+        .form-group { margin-bottom: 18px; }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--dark);
+            margin-bottom: 7px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+            color: #334155;
         }
-        .form-group input, .form-group select {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #e5edf6;
-            border-radius: 6px;
+            padding: 13px 14px;
+            border: 1px solid var(--lp-line);
+            border-radius: 12px;
             font-size: 16px;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.85);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: rgba(18, 140, 126, 0.55);
+            box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.15);
+            background: #fff;
+        }
+        .form-group input#code {
+            font-size: 1.35rem;
+            letter-spacing: 0.35em;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .form-row-phone {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .form-row-phone .form-group--dial {
+            flex: 0 0 min(46%, 168px);
+            min-width: 140px;
+        }
+        .form-row-phone .form-group--num {
+            flex: 1 1 160px;
+            min-width: 0;
+        }
+        .register-page .phone-country-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+            max-height: 200px;
         }
         .message {
-            padding: 12px;
-            border-radius: 6px;
+            padding: 14px 16px;
+            border-radius: 14px;
             margin-bottom: 20px;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
+            font-weight: 500;
+            line-height: 1.45;
+            border: 1px solid transparent;
         }
         .message.error {
-            background-color: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
+            background: linear-gradient(135deg, rgba(254, 226, 226, 0.95), rgba(255, 241, 242, 0.95));
+            color: #b91c1c;
+            border-color: rgba(248, 113, 113, 0.25);
         }
         .message.success {
-            background-color: #d1fae5;
-            color: #059669;
-            border: 1px solid #a7f3d0;
+            background: linear-gradient(135deg, rgba(212, 239, 234, 0.95), rgba(236, 248, 246, 0.96));
+            color: #0a5048;
+            border-color: rgba(18, 140, 126, 0.35);
         }
         .message.info {
-            background-color: #e0f2fe;
+            background: linear-gradient(135deg, rgba(224, 242, 254, 0.95), rgba(236, 254, 255, 0.95));
             color: #0369a1;
-            border: 1px solid #bae6fd;
+            border-color: rgba(56, 189, 248, 0.3);
         }
-        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
         .btn {
             flex: 1;
-            padding: 12px;
+            min-width: 120px;
+            padding: 14px 18px;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
+            border-radius: 14px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: transform 0.2s, box-shadow 0.25s, filter 0.2s;
         }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { background: var(--accent-2); }
-        .links { text-align: center; margin-top: 20px; }
-        .links a { color: var(--accent); text-decoration: none; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--lp-accent) 0%, #0e6b62 45%, var(--lp-accent-2) 100%);
+            background-size: 200% 100%;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(18, 140, 126, 0.35), 0 12px 32px rgba(15, 23, 42, 0.12);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(18, 140, 126, 0.4), 0 16px 40px rgba(15, 23, 42, 0.15);
+            filter: brightness(1.03);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .form-footer {
+            margin-top: 26px;
+            padding-top: 22px;
+            border-top: 1px solid var(--lp-line);
+            text-align: center;
+        }
+        .form-footer a {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--lp-accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .form-footer a:hover { border-bottom-color: var(--lp-accent); }
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .links a {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--lp-violet);
+            text-decoration: none;
+        }
+        .links a:hover { text-decoration: underline; }
         .input-readonly {
-            background: #f1f5f9;
-            color: var(--dark);
+            background: rgba(241, 245, 249, 0.95) !important;
+            color: var(--lp-dark);
             cursor: default;
+            border-style: dashed !important;
         }
         .login-next-step {
-            margin-top: 8px;
-            padding-top: 18px;
-            border-top: 1px solid #e5edf6;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--lp-line);
         }
+        .login-next-step .step-label,
         .step-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--lp-muted);
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 12px;
+            letter-spacing: 0.1em;
+            margin-bottom: 14px;
         }
         .link-btn {
-            background: none;
-            border: none;
-            color: var(--accent);
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--lp-line);
+            color: #0e6b62;
             cursor: pointer;
-            text-decoration: underline;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: inherit;
             width: 100%;
-            margin-top: 8px;
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: background 0.2s, border-color 0.2s;
         }
-        .form-group--privacy {
-            margin-bottom: 16px;
+        .link-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(18, 140, 126, 0.35);
         }
+        .form-group--privacy { margin-bottom: 16px; }
         .privacy-check {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: flex-start;
-            font-size: 0.88rem;
-            color: var(--muted);
-            line-height: 1.45;
+            font-size: 0.86rem;
+            color: var(--lp-muted);
+            line-height: 1.5;
             cursor: pointer;
         }
         .privacy-check input {
             width: auto;
-            margin-top: 4px;
+            margin-top: 3px;
             flex-shrink: 0;
+            accent-color: var(--lp-accent);
         }
         .privacy-check a {
-            color: var(--accent);
-            font-weight: 600;
+            color: var(--lp-accent);
+            font-weight: 700;
+        }
+        * { box-sizing: border-box; }
+        body:has(.register-page) {
+            margin: 0;
+            min-height: 100vh;
+            background: #fafafa;
+        }
+        @media (max-width: 480px) {
+            .register-page .register-form.register-card {
+                padding: 22px 16px !important;
+                border-radius: 20px !important;
+            }
+            .register-card__lead {
+                font-size: 0.86rem !important;
+                margin-bottom: 18px !important;
+            }
         }
     </style>
 </head>
 <body>
     <?php require __DIR__ . '/includes/site_nav.php'; ?>
 
-    <main class="container">
-        <?php if ($show_otp_step): ?>
-            <form class="register-form" method="POST" id="reg-form-otp">
+    <?php if ($show_otp_step): ?>
+    <main class="register-page" id="contenu-principal">
+        <div class="register-page__container">
+            <div class="register-form register-card">
+                <div class="register-card__brand">
+                    <div class="register-card__mark<?php echo app_logo_available() ? ' register-card__mark--logo' : ''; ?>">
+                        <?php if (app_logo_available()): ?>
+                            <img src="<?php echo htmlspecialchars(samapiece_url(APP_LOGO_URL), ENT_QUOTES, 'UTF-8'); ?>" alt="" width="160" height="40" decoding="async">
+                        <?php else: ?>
+                            <span aria-hidden="true">✉</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
                 <h2>Confirmer votre e-mail</h2>
+                <p class="register-card__lead">Saisissez le code à 6 chiffres reçu dans votre boîte mail.</p>
                 <?php if ($message): ?>
                     <div class="message <?php echo htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8'); ?>">
                         <?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                 <?php endif; ?>
-                <input type="hidden" name="register_action" value="register_verify_otp">
-                <input type="hidden" name="reg_otp_user_id" value="<?php echo $reg_otp_uid_attr; ?>">
-                <div class="form-group">
-                    <label for="email_otp_show">Email</label>
-                    <input type="email" id="email_otp_show" class="input-readonly" readonly autocomplete="username" value="<?php echo $reg_otp_email_attr; ?>" aria-readonly="true">
-                </div>
-                <div class="login-next-step">
-                    <div class="step-label">Code reçu par e-mail</div>
+                <form method="POST" id="reg-form-otp">
+                    <input type="hidden" name="register_action" value="register_verify_otp">
+                    <input type="hidden" name="reg_otp_user_id" value="<?php echo $reg_otp_uid_attr; ?>">
                     <div class="form-group">
-                        <label for="code">Saisissez les 6 chiffres</label>
-                        <input type="text" id="code" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code" placeholder="000000">
+                        <label for="email_otp_show">Email</label>
+                        <input type="email" id="email_otp_show" class="input-readonly" readonly autocomplete="username" value="<?php echo $reg_otp_email_attr; ?>" aria-readonly="true">
                     </div>
+                    <div class="login-next-step">
+                        <div class="step-label">Code reçu par e-mail</div>
+                        <div class="form-group">
+                            <label for="code">Saisissez les 6 chiffres</label>
+                            <input type="text" id="code" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code" placeholder="000000">
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">Valider et accéder à mon profil</button>
+                    </div>
+                </form>
+                <form method="POST">
+                    <input type="hidden" name="register_action" value="register_resend_otp">
+                    <input type="hidden" name="reg_otp_user_id" value="<?php echo $reg_otp_uid_attr; ?>">
+                    <button type="submit" class="link-btn">Renvoyer le code par e-mail</button>
+                </form>
+                <form method="POST">
+                    <input type="hidden" name="register_action" value="register_cancel_otp">
+                    <button type="submit" class="link-btn">Modifier mon inscription</button>
+                </form>
+                <div class="form-footer">
+                    <a href="<?php echo htmlspecialchars(samapiece_url('login.php'), ENT_QUOTES, 'UTF-8'); ?>">Déjà un compte ? Se connecter</a>
                 </div>
-                <div class="button-group">
-                    <button type="submit" class="btn btn-primary">Valider et accéder à mon profil</button>
-                </div>
-            </form>
-            <form class="register-form" method="POST" style="margin-top:-10px;padding-top:0;box-shadow:none;background:transparent;">
-                <input type="hidden" name="register_action" value="register_resend_otp">
-                <input type="hidden" name="reg_otp_user_id" value="<?php echo $reg_otp_uid_attr; ?>">
-                <button type="submit" class="link-btn">Renvoyer le code par e-mail</button>
-            </form>
-            <form class="register-form" method="POST" style="margin-top:-8px;padding-top:0;box-shadow:none;background:transparent;">
-                <input type="hidden" name="register_action" value="register_cancel_otp">
-                <button type="submit" class="link-btn">Modifier mon inscription</button>
-            </form>
-            <div class="links" style="margin-top:16px;">
-                <a href="login.php">Déjà un compte ? Se connecter</a>
             </div>
-        <?php else: ?>
-        <form class="register-form" method="POST" id="reg-form">
+        </div>
+    </main>
+    <?php else: ?>
+    <main class="register-page" id="contenu-principal">
+        <div class="register-page__container">
+        <form class="register-form register-card" method="POST" id="reg-form">
+            <div class="register-card__brand">
+                <div class="register-card__mark<?php echo app_logo_available() ? ' register-card__mark--logo' : ''; ?>">
+                    <?php if (app_logo_available()): ?>
+                        <img src="<?php echo htmlspecialchars(samapiece_url(APP_LOGO_URL), ENT_QUOTES, 'UTF-8'); ?>" alt="" width="160" height="40" decoding="async">
+                    <?php else: ?>
+                        <span aria-hidden="true">✨</span>
+                    <?php endif; ?>
+                </div>
+            </div>
             <h2>S’inscrire</h2>
+            <p class="register-card__lead">Créez un compte pour déclarer ou retrouver un document perdu.</p>
 
-            <div class="mode-tabs" role="tablist">
-                <button type="button" class="<?php echo $register_mode === 'email' ? 'active' : ''; ?>" data-mode="email" role="tab" aria-selected="<?php echo $register_mode === 'email' ? 'true' : 'false'; ?>">Avec email</button>
-                <button type="button" class="<?php echo $register_mode === 'phone' ? 'active' : ''; ?>" data-mode="phone" role="tab" aria-selected="<?php echo $register_mode === 'phone' ? 'true' : 'false'; ?>">Téléphone seulement</button>
+            <div class="mode-tabs" role="tablist" aria-label="Mode d’inscription">
+                <button type="button" class="<?php echo $register_mode === 'email' ? 'active' : ''; ?>" data-mode="email" role="tab" aria-selected="<?php echo $register_mode === 'email' ? 'true' : 'false'; ?>"><span class="tab-icon" aria-hidden="true">✉</span>Avec email</button>
+                <button type="button" class="<?php echo $register_mode === 'phone' ? 'active' : ''; ?>" data-mode="phone" role="tab" aria-selected="<?php echo $register_mode === 'phone' ? 'true' : 'false'; ?>"><span class="tab-icon" aria-hidden="true">📱</span>Téléphone seulement</button>
             </div>
 
             <input type="hidden" name="register_mode" id="register_mode" value="<?php echo htmlspecialchars($register_mode === 'phone' ? 'phone' : 'email'); ?>">
@@ -530,12 +747,13 @@ $page_title = 'Inscription - Samapiece';
                 <button type="submit" class="btn btn-primary">Continuer</button>
             </div>
 
-            <div class="links">
-                <a href="login.php">Déjà un compte ? Se connecter</a>
+            <div class="form-footer">
+                <a href="<?php echo htmlspecialchars(samapiece_url('login.php'), ENT_QUOTES, 'UTF-8'); ?>">Déjà un compte ? Se connecter</a>
             </div>
         </form>
-        <?php endif; ?>
+        </div>
     </main>
+    <?php endif; ?>
     <?php require __DIR__ . '/includes/site_footer.php'; ?>
     <script>
     (function() {

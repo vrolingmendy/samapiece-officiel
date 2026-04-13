@@ -108,9 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         :root {
             --accent: #00b7ff;
             --accent-2: #0ea5e9;
-            --green: #22c55e;
-            --green-dark: #15803d;
-            --green-soft: #ecfdf5;
+            --green: #128c7e;
+            --green-dark: #0e6b62;
+            --green-soft: #e8f5f3;
             --dark: #0f172a;
             --muted: #425466;
             --bg: #f9fbff;
@@ -198,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             left: -10%;
             bottom: 15%;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(34, 197, 94, 0.09) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(18, 140, 126, 0.09) 0%, transparent 70%);
         }
 
         .declare-section__inner {

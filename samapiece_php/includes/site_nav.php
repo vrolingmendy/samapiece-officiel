@@ -66,7 +66,7 @@ if (empty($GLOBALS['_site_nav_styles_printed'])) {
     min-width: 0;
 }
 .site-nav-brand:hover {
-    color: #16a34a;
+    color: #128c7e;
 }
 .site-nav-brand:hover .site-nav-logo {
     opacity: 0.92;
@@ -116,8 +116,8 @@ if (empty($GLOBALS['_site_nav_styles_printed'])) {
     transition: background 0.2s, color 0.2s;
 }
 .site-nav-middle a:hover {
-    background: #f0fdf4;
-    color: #15803d;
+    background: #e8f5f3;
+    color: #0e6b62;
 }
 .site-nav-auth {
     display: flex;
@@ -150,7 +150,7 @@ if (empty($GLOBALS['_site_nav_styles_printed'])) {
     background: #fafafa;
 }
 .site-nav-btn--solid {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    background: linear-gradient(135deg, #128c7e 0%, #0e6b62 100%);
     color: #fff !important;
     border-color: transparent;
 }

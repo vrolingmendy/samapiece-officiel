@@ -168,7 +168,7 @@ $page_title = 'Code reçu par e-mail - Samapiece';
             font-size: 0.95rem;
         }
         .message.error { background: #fee2e2; color: #b91c1c; }
-        .message.success { background: #d1fae5; color: #047857; }
+        .message.success { background: #d4efea; color: #0a5048; border: 1px solid #b8dfd8; }
         .btn {
             width: 100%;
             padding: 12px;

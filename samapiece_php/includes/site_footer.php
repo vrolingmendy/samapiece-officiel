@@ -13,8 +13,8 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     margin-top: clamp(32px, 5vw, 56px);
     margin-bottom: 0;
     position: relative;
-    border-top: 1px solid rgba(34, 197, 94, 0.15);
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 40%, #f0fdf4 100%);
+    border-top: 1px solid rgba(18, 140, 126, 0.15);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 40%, #e8f5f3 100%);
     padding: clamp(12px, 2vw, 18px) 0 max(env(safe-area-inset-bottom, 0px), clamp(20px, 3vw, 36px));
     overflow: hidden;
 }
@@ -25,7 +25,7 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #22c55e 0%, #16a34a 42%, #0ea5e9 100%);
+    background: linear-gradient(90deg, #128c7e 0%, #0e6b62 42%, #0ea5e9 100%);
     opacity: 0.95;
 }
 .site-footer__inner {
@@ -51,7 +51,7 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     letter-spacing: -0.02em;
     color: #0a0a0a;
     margin-bottom: 4px;
-    background: linear-gradient(120deg, #0a0a0a 0%, #16a34a 100%);
+    background: linear-gradient(120deg, #0a0a0a 0%, #128c7e 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -76,8 +76,8 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     border-bottom: 1px solid rgba(100, 116, 139, 0.35);
 }
 .site-footer__company a:hover {
-    color: #15803d;
-    border-bottom-color: rgba(34, 197, 94, 0.45);
+    color: #0e6b62;
+    border-bottom-color: rgba(18, 140, 126, 0.45);
 }
 .site-footer__nav {
     display: flex;
@@ -100,8 +100,8 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     transition: color 0.2s, border-color 0.2s;
 }
 .site-footer__nav a:hover {
-    color: #15803d;
-    border-bottom-color: rgba(34, 197, 94, 0.45);
+    color: #0e6b62;
+    border-bottom-color: rgba(18, 140, 126, 0.45);
 }
 .site-footer__socialblock {
     width: 100%;
@@ -150,7 +150,7 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
 }
 .site-footer__social-btn:focus-visible {
-    outline: 2px solid #22c55e;
+    outline: 2px solid #128c7e;
     outline-offset: 3px;
 }
 .site-footer__social-btn svg {

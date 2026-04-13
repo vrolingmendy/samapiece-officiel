@@ -35,15 +35,15 @@ $u_index = $link('index.php');
             --ink: #0f172a;
             --muted: #64748b;
             --line: #e2e8f0;
-            --green: #22c55e;
-            --green-dark: #16a34a;
-            --green-soft: #f0fdf4;
+            --green: #128c7e;
+            --green-dark: #0e6b62;
+            --green-soft: #e8f5f3;
             --card: #ffffff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 50%, #ecfdf5 100%);
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 50%, #ecf8f6 100%);
             color: var(--ink);
             line-height: 1.6;
             min-height: 100vh;
@@ -70,7 +70,7 @@ $u_index = $link('index.php');
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--green), #34d399, #0ea5e9);
+            background: linear-gradient(90deg, var(--green), #5cbaae, #0ea5e9);
         }
         .help-hero::after {
             content: "";
@@ -79,7 +79,7 @@ $u_index = $link('index.php');
             right: -15%;
             width: 45%;
             aspect-ratio: 1;
-            background: radial-gradient(circle, rgba(34, 197, 94, 0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(18, 140, 126, 0.12) 0%, transparent 70%);
             pointer-events: none;
         }
         .help-hero-inner { position: relative; z-index: 1; }
@@ -113,7 +113,7 @@ $u_index = $link('index.php');
             color: var(--green-dark);
             font-weight: 600;
             text-decoration: none;
-            border-bottom: 1px solid rgba(22, 163, 74, 0.35);
+            border-bottom: 1px solid rgba(18, 140, 126, 0.35);
         }
         .help-hero .help-company a:hover {
             border-bottom-color: var(--green-dark);
@@ -121,8 +121,8 @@ $u_index = $link('index.php');
         .help-contact {
             border-radius: 16px;
             padding: clamp(20px, 3vw, 26px);
-            background: linear-gradient(145deg, var(--green-soft) 0%, #ecfdf5 100%);
-            border: 1px solid rgba(34, 197, 94, 0.25);
+            background: linear-gradient(145deg, var(--green-soft) 0%, #ecf8f6 100%);
+            border: 1px solid rgba(18, 140, 126, 0.25);
             margin-bottom: clamp(28px, 4vw, 36px);
             display: grid;
             gap: 12px;
@@ -143,7 +143,7 @@ $u_index = $link('index.php');
             display: grid;
             place-items: center;
             flex-shrink: 0;
-            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.35);
+            box-shadow: 0 8px 24px rgba(18, 140, 126, 0.35);
         }
         .help-contact-icon svg { width: 24px; height: 24px; }
         .help-contact h2 {
@@ -168,13 +168,13 @@ $u_index = $link('index.php');
             padding: 10px 16px;
             border-radius: 999px;
             background: #fff;
-            border: 1px solid rgba(34, 197, 94, 0.35);
-            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(18, 140, 126, 0.35);
+            box-shadow: 0 4px 14px rgba(18, 140, 126, 0.12);
             transition: transform 0.15s, box-shadow 0.15s;
         }
         .help-contact a.mail:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 22px rgba(34, 197, 94, 0.2);
+            box-shadow: 0 8px 22px rgba(18, 140, 126, 0.2);
         }
         .help-section-title {
             font-size: 0.75rem;

@@ -3,7 +3,7 @@
 
 // Configuration de base
 define('APP_NAME', 'Samapiece');
-define('APP_VERSION', '1.0.0');
+define('APP_VERSION', '1.1.0');
 /** Éditeur / entreprise propriétaire de l’application */
 define('APP_COMPANY_NAME', 'Goo-Bridge');
 /** Site web de l’entreprise (sans slash final dans les liens) */
@@ -16,6 +16,18 @@ define('AUTH_POST_LOGIN_URL', 'dashboard.php');
 // Logo (fichier dans /img, URL relative à la racine de l’app)
 define('APP_LOGO_PATH', __DIR__ . '/img/samapiece-logo.png');
 define('APP_LOGO_URL', 'img/samapiece-logo.png');
+
+/** Palette verte (marque — même ton que le bouton « Continuer ») */
+if (!defined('SAMAPIECE_GREEN')) {
+    define('SAMAPIECE_GREEN', '#128c7e');
+    define('SAMAPIECE_GREEN_DARK', '#0e6b62');
+    define('SAMAPIECE_GREEN_MID', '#107c71');
+    define('SAMAPIECE_GREEN_TEXT', '#0a5048');
+    define('SAMAPIECE_GREEN_SOFT', '#e8f5f3');
+    define('SAMAPIECE_GREEN_SOFT2', '#ecf8f6');
+    define('SAMAPIECE_GREEN_BORDER', '#b8dfd8');
+    define('SAMAPIECE_GREEN_SUCCESS_BG', '#d4efea');
+}
 
 if (!function_exists('app_logo_available')) {
     function app_logo_available() {

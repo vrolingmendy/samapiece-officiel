@@ -96,8 +96,8 @@ $page_title = 'Détails de la déclaration - Samapiece';
         }
 
         .status-pill--done {
-            background: #f0fdf4;
-            color: #15803d;
+            background: #e8f5f3;
+            color: #0e6b62;
         }
 
         .hero-image {

@@ -373,14 +373,14 @@ function samapiece_email_html_layout(string $title, string $innerHtml) {
         . '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f1f5f9;padding:24px 12px;">'
         . '<tr><td align="center">'
         . '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(15,23,42,0.08);">'
-        . '<tr><td style="background:linear-gradient(120deg,#16a34a 0%,#22c55e 45%,#0ea5e9 100%);padding:22px 28px;">'
+        . '<tr><td style="background:linear-gradient(120deg,' . SAMAPIECE_GREEN_DARK . ' 0%,' . SAMAPIECE_GREEN . ' 45%,#0ea5e9 100%);padding:22px 28px;">'
         . '<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.9);">' . $brand . '</p>'
         . '<h1 style="margin:8px 0 0;font-size:20px;font-weight:700;color:#ffffff;line-height:1.25;">' . $titleEsc . '</h1>'
         . '</td></tr>'
         . '<tr><td style="padding:28px 28px 8px;">' . $innerHtml . '</td></tr>'
         . '<tr><td style="padding:0 28px 24px;font-size:13px;color:#64748b;border-top:1px solid #e2e8f0;">'
-        . '<p style="margin:16px 0 8px;">Besoin d’aide ? <a href="' . $helpUrl . '" style="color:#15803d;font-weight:600;">Page Aide</a> · '
-        . '<a href="mailto:' . htmlspecialchars(APP_CONTACT_EMAIL, ENT_QUOTES, 'UTF-8') . '" style="color:#15803d;font-weight:600;">' . htmlspecialchars(APP_CONTACT_EMAIL, ENT_QUOTES, 'UTF-8') . '</a></p>'
+        . '<p style="margin:16px 0 8px;">Besoin d’aide ? <a href="' . $helpUrl . '" style="color:' . SAMAPIECE_GREEN_DARK . ';font-weight:600;">Page Aide</a> · '
+        . '<a href="mailto:' . htmlspecialchars(APP_CONTACT_EMAIL, ENT_QUOTES, 'UTF-8') . '" style="color:' . SAMAPIECE_GREEN_DARK . ';font-weight:600;">' . htmlspecialchars(APP_CONTACT_EMAIL, ENT_QUOTES, 'UTF-8') . '</a></p>'
         . '<p style="margin:0;font-size:12px;">© ' . date('Y') . ' ' . $brand . ' · ' . htmlspecialchars(APP_COMPANY_NAME, ENT_QUOTES, 'UTF-8') . '</p>'
         . '</td></tr></table></td></tr></table></body></html>';
 }
@@ -424,12 +424,12 @@ function samapiece_send_recovery_request_emails(array $item, ?array $ownerUser, 
             . '<p style="margin:0 0 16px;"><strong>' . $requesterHint . '</strong> a demandé la récupération d’un document que vous avez déclaré sur <strong>' . htmlspecialchars(APP_NAME, ENT_QUOTES, 'UTF-8') . '</strong>, dans la catégorie <strong>' . $catEsc . '</strong>.</p>'
             . '<p style="margin:0 0 16px;">Remettez le document <strong>en personne</strong>. Lors de la remise, vérifiez le <strong>code à 8 caractères</strong> ou le <strong>QR code</strong> présenté par la personne, puis confirmez la remise depuis votre tableau de bord.</p>'
             . '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;"><tr>'
-            . '<td style="border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;padding:14px 18px;">'
-            . '<p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#166534;">Prochaine étape</p>'
-            . '<p style="margin:0;font-size:14px;color:#14532d;">Ouvrez votre tableau de bord pour afficher le code et le QR à comparer lors de la remise.</p>'
+            . '<td style="border-radius:10px;background:' . SAMAPIECE_GREEN_SOFT . ';border:1px solid ' . SAMAPIECE_GREEN_BORDER . ';padding:14px 18px;">'
+            . '<p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:' . SAMAPIECE_GREEN_TEXT . ';">Prochaine étape</p>'
+            . '<p style="margin:0;font-size:14px;color:' . SAMAPIECE_GREEN_TEXT . ';">Ouvrez votre tableau de bord pour afficher le code et le QR à comparer lors de la remise.</p>'
             . '</td></tr></table>'
             . '<p style="margin:20px 0 16px;text-align:center;">'
-            . '<a href="' . $dashboardOwner . '" style="display:inline-block;padding:12px 22px;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:700;border-radius:999px;font-size:15px;">Tableau de bord</a>'
+            . '<a href="' . $dashboardOwner . '" style="display:inline-block;padding:12px 22px;background:' . SAMAPIECE_GREEN . ';color:#ffffff;text-decoration:none;font-weight:700;border-radius:999px;font-size:15px;">Tableau de bord</a>'
             . '</p>'
             . '<p style="margin:0 0 8px;font-size:14px;"><a href="' . $viewDecl . '" style="color:#0ea5e9;font-weight:600;">Détails de la déclaration</a></p>'
             . '<p style="margin:16px 0 0;font-size:13px;color:#64748b;">Si vous n’êtes pas à l’origine de cette déclaration ou en cas de doute, contactez le support.</p>';
@@ -665,7 +665,7 @@ function auth_send_otp_email_html($to, $code, $prenom = '', $nom = '', $purpose 
     $body .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f1f5f9;padding:24px 12px;">';
     $body .= '<tr><td align="center">';
     $body .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 12px 40px rgba(15,23,42,0.08);">';
-    $body .= '<tr><td style="height:4px;background:linear-gradient(90deg,#22c55e 0%,#0ea5e9 50%,#00b7ff 100%);"></td></tr>';
+    $body .= '<tr><td style="height:4px;background:linear-gradient(90deg,' . SAMAPIECE_GREEN . ' 0%,#0ea5e9 50%,#00b7ff 100%);"></td></tr>';
     $body .= '<tr><td style="padding:28px 28px 8px;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">';
     $body .= '<p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#0ea5e9;">' . $app . '</p>';
     $body .= '<h1 style="margin:0 0 16px;font-size:22px;line-height:1.25;font-weight:800;letter-spacing:-0.02em;color:#0f172a;">Code de vérification</h1>';
@@ -676,7 +676,7 @@ function auth_send_otp_email_html($to, $code, $prenom = '', $nom = '', $purpose 
     $body .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:linear-gradient(145deg,#f8fafc 0%,#f0f9ff 100%);border-radius:14px;border:1px solid #bae6fd;">';
     $body .= '<tr><td align="center" style="padding:24px 20px;">';
     $body .= '<p style="margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Votre code</p>';
-    $body .= '<p style="margin:0;font-family:Consolas,Monaco,ui-monospace,monospace;font-size:32px;font-weight:800;letter-spacing:0.35em;color:#22c55e;line-height:1.2;text-shadow:0 1px 0 rgba(255,255,255,0.5);">' . $code_display . '</p>';
+    $body .= '<p style="margin:0;font-family:Consolas,Monaco,ui-monospace,monospace;font-size:32px;font-weight:800;letter-spacing:0.35em;color:' . SAMAPIECE_GREEN . ';line-height:1.2;text-shadow:0 1px 0 rgba(255,255,255,0.5);">' . $code_display . '</p>';
     $body .= '</td></tr></table>';
     $body .= '<p style="margin:20px 0 0;font-size:13px;line-height:1.5;color:#64748b;">Ce code est valable <strong style="color:#0f172a;">15 minutes</strong>. Ne le partagez avec personne.</p>';
     $body .= '<p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#94a3b8;">Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce message en toute sécurité.</p>';
