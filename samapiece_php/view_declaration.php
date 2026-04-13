@@ -25,6 +25,8 @@ if (!$document) {
     exit;
 }
 
+$document['date_naissance'] = samapiece_birth_date_decrypt($document['date_naissance'] ?? null);
+
 $recovery_st = lost_item_recovery_status($document);
 
 $page_title = 'Détails de la déclaration - Samapiece';
@@ -305,7 +307,11 @@ $page_title = 'Détails de la déclaration - Samapiece';
 
             <div class="detail-content">
                 <div class="detail-main">
-                    <h2><?php echo htmlspecialchars($document['categorie'] ?? 'Document déclaré'); ?></h2>
+                    <?php
+                    $view_cat_raw = $document['categorie'] ?? '';
+                    $view_cat_heading = $view_cat_raw !== '' ? lost_item_categorie_label($view_cat_raw) : 'Document déclaré';
+                    ?>
+                    <h2><?php echo htmlspecialchars($view_cat_heading); ?></h2>
                     <div class="detail-box">
                         <h3>Informations principales</h3>
                         <div class="detail-row">

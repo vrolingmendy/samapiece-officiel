@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['login_email'] = $email;
                     $otp = auth_generate_otp();
                     auth_set_email_otp($uid, $otp, 15);
-                    if (auth_send_otp_email_html($email, $otp)) {
+                    if (auth_send_otp_email_html($email, $otp, $user['prenom'] ?? '', $user['nom'] ?? '', 'login')) {
                         $_SESSION['login_otp_sent_at'][$email] = time();
                         $message = 'Un nouveau code vous a été envoyé.';
                     } else {
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         } else {
                             $otp = auth_generate_otp();
                             auth_set_email_otp($user['id'], $otp, 15);
-                            if (auth_send_otp_email_html($email, $otp)) {
+                            if (auth_send_otp_email_html($email, $otp, $user['prenom'] ?? '', $user['nom'] ?? '', 'login')) {
                                 $_SESSION['login_otp_sent_at'][$email] = time();
                                 $_SESSION['login_uid'] = $user['id'];
                                 $_SESSION['login_kind'] = 'otp';

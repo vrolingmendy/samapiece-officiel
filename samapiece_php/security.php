@@ -158,3 +158,60 @@ class SecurityManager {
         return strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 8));
     }
 }
+
+/**
+ * Clé dérivée pour le chiffrement des dates de naissance au repos (AES-256-GCM).
+ */
+function samapiece_birth_date_crypto_key() {
+    return substr(hash('sha256', SECRET_KEY . '|samapiece|birthdate|v1', true), 0, 32);
+}
+
+/**
+ * Chiffre une date YYYY-MM-DD pour stockage en base. Retourne null si vide / invalide.
+ */
+function samapiece_birth_date_encrypt($plainYmd) {
+    $plainYmd = trim((string) $plainYmd);
+    if ($plainYmd === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $plainYmd)) {
+        return null;
+    }
+    if (!function_exists('openssl_encrypt')) {
+        return $plainYmd;
+    }
+    $key = samapiece_birth_date_crypto_key();
+    $iv = random_bytes(12);
+    $tag = '';
+    $cipher = openssl_encrypt($plainYmd, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+    if ($cipher === false || strlen($tag) !== 16) {
+        return $plainYmd;
+    }
+    return 'B1:' . base64_encode($iv . $tag . $cipher);
+}
+
+/**
+ * Déchiffre une valeur stockée ; accepte les anciennes dates en clair YYYY-MM-DD.
+ */
+function samapiece_birth_date_decrypt($stored) {
+    if ($stored === null || $stored === '') {
+        return '';
+    }
+    $stored = trim((string) $stored);
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $stored)) {
+        return $stored;
+    }
+    if (strpos($stored, 'B1:') !== 0 || !function_exists('openssl_decrypt')) {
+        return '';
+    }
+    $raw = base64_decode(substr($stored, 3), true);
+    if ($raw === false || strlen($raw) < 12 + 16) {
+        return '';
+    }
+    $iv = substr($raw, 0, 12);
+    $tag = substr($raw, 12, 16);
+    $cipher = substr($raw, 28);
+    $key = samapiece_birth_date_crypto_key();
+    $plain = openssl_decrypt($cipher, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+    if ($plain === false || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $plain)) {
+        return '';
+    }
+    return $plain;
+}

@@ -10,7 +10,7 @@ if (!$user) {
 
 $id = trim($_GET['id'] ?? '');
 if ($id === '') {
-    header('Location: ' . samapiece_absolute_url('dashboard.php#mes-demandes-recuperation'));
+    header('Location: ' . samapiece_absolute_url('dashboard.php#mes-recuperations'));
     exit;
 }
 
@@ -24,6 +24,8 @@ if (!$document) {
     header('Location: ' . samapiece_absolute_url('dashboard.php'));
     exit;
 }
+
+$document['date_naissance'] = samapiece_birth_date_decrypt($document['date_naissance'] ?? null);
 
 list($ok_code, $handover_code) = lost_item_ensure_handover_code($id);
 if (!$ok_code || !$handover_code) {
@@ -132,7 +134,7 @@ $page_title = 'Code de remise - Samapiece';
                 </div>
                 <p class="hint">Le déclarant peut saisir ce code ou scanner le QR (connecté en tant que « déclarant ») pour valider la remise.</p>
             </div>
-            <a class="back" href="<?php echo htmlspecialchars(samapiece_absolute_url('dashboard.php#mes-demandes-recuperation')); ?>">← Retour au tableau de bord</a>
+            <a class="back" href="<?php echo htmlspecialchars(samapiece_absolute_url('dashboard.php#mes-recuperations')); ?>">← Retour au tableau de bord</a>
         </div>
     </main>
     <?php require __DIR__ . '/includes/site_footer.php'; ?>

@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'resen
         $otp = auth_generate_otp();
         auth_set_email_otp($user_id, $otp, 15);
         $user = get_user_by_id($user_id);
-        if ($user && auth_send_otp_email_html($user['email'], $otp)) {
+        if ($user && auth_send_otp_email_html($user['email'], $otp, $user['prenom'] ?? '', $user['nom'] ?? '', 'register')) {
             $_SESSION['register_otp_sent_at'] = time();
             $message = 'Un nouveau code vous a été envoyé par e-mail. Il est à nouveau valable 15 minutes.';
         } else {

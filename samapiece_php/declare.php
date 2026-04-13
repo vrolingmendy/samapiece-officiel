@@ -31,7 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($prenom)) $errors[] = 'Le prénom est requis.';
     if (empty($date_naissance)) $errors[] = 'La date de naissance est requise.';
     if (empty($lieu_naissance)) $errors[] = 'Le lieu de naissance est requis.';
-    if (empty($categorie)) $errors[] = 'La catégorie est requise.';
+    if (empty($categorie)) {
+        $errors[] = 'La catégorie est requise.';
+    } elseif (!in_array($categorie, lost_item_category_valid_codes(), true)) {
+        $errors[] = 'La catégorie sélectionnée n’est pas valide.';
+    }
 
     // Validation des fichiers
     $photo1_path = null;
@@ -104,10 +108,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         :root {
             --accent: #00b7ff;
             --accent-2: #0ea5e9;
+            --green: #22c55e;
+            --green-dark: #15803d;
+            --green-soft: #ecfdf5;
             --dark: #0f172a;
             --muted: #425466;
             --bg: #f9fbff;
             --surface: #ffffff;
+            --line: rgba(148, 163, 184, 0.35);
         }
         * {
             margin: 0;
@@ -124,66 +132,234 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .container {
-            max-width: 800px;
+            max-width: min(920px, 100%);
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 clamp(14px, 4vw, 24px);
         }
 
         main {
-            padding: 28px 0 0;
-        }
-
-        .declare-section {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,252,255,0.92));
-            padding: clamp(20px, 5vw, 40px);
-            border-radius: clamp(18px, 4vw, 28px);
-            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-            border: 1px solid rgba(226, 232, 240, 0.9);
-            backdrop-filter: blur(18px);
+            padding: 24px 0 0;
             width: 100%;
             min-width: 0;
         }
 
-        .declare-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+        .declare-section {
+            position: relative;
+            margin-bottom: 32px;
+            padding: 0;
+            border-radius: 22px;
+            overflow: hidden;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 252, 255, 1) 38%, rgba(236, 253, 245, 0.45) 100%);
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.9) inset,
+                0 20px 50px rgba(15, 23, 42, 0.07),
+                0 4px 20px rgba(0, 183, 255, 0.05);
+            width: 100%;
+            min-width: 0;
         }
 
-        .form-group {
+        .declare-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green) 0%, var(--accent-2) 50%, var(--accent) 100%);
+            opacity: 0.95;
+        }
+
+        .declare-section__bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            border-radius: inherit;
+        }
+
+        .declare-section__bg::after {
+            content: "";
+            position: absolute;
+            width: min(380px, 85vw);
+            height: min(380px, 85vw);
+            right: -15%;
+            top: -20%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 183, 255, 0.1) 0%, transparent 68%);
+        }
+
+        .declare-section__bg::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            left: -10%;
+            bottom: 15%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.09) 0%, transparent 70%);
+        }
+
+        .declare-section__inner {
+            position: relative;
+            z-index: 1;
+            padding: clamp(22px, 4vw, 38px) clamp(18px, 4vw, 40px) clamp(28px, 4.5vw, 44px);
+        }
+
+        .declare-section__head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: clamp(14px, 3vw, 22px);
+            align-items: center;
+            margin-bottom: clamp(22px, 3.5vw, 30px);
+            padding-bottom: clamp(18px, 3vw, 24px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        @media (max-width: 540px) {
+            .declare-section__head {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                text-align: center;
+            }
+        }
+
+        .declare-section__icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: clamp(56px, 12vw, 72px);
+            height: clamp(56px, 12vw, 72px);
+            border-radius: 20px;
+            background: linear-gradient(145deg, #fff 0%, #f0f9ff 100%);
+            border: 1px solid rgba(0, 183, 255, 0.22);
+            box-shadow:
+                0 10px 28px rgba(0, 183, 255, 0.12),
+                0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            font-size: clamp(1.6rem, 4vw, 2rem);
+            line-height: 1;
+        }
+
+        .declare-section__head h2 {
+            margin: 0;
+            min-width: 0;
+            font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            color: var(--dark);
+            line-height: 1.15;
+        }
+
+        .declare-errors {
+            margin-bottom: clamp(18px, 3vw, 24px);
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%);
+            border: 1px solid rgba(248, 113, 113, 0.35);
+            color: #b91c1c;
+            font-size: 0.92rem;
+        }
+
+        .declare-errors ul {
+            margin: 0;
+            padding-left: 1.15em;
+        }
+
+        .declare-errors li {
+            margin: 0.25em 0;
+        }
+
+        .declare-form {
             display: flex;
             flex-direction: column;
+            gap: clamp(22px, 3.5vw, 28px);
         }
 
-        .form-group.full-width {
+        .declare-panel {
+            padding: clamp(16px, 3vw, 22px);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(226, 232, 240, 0.85);
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .declare-panel h3 {
+            margin: 0 0 6px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-2);
+        }
+
+        .declare-panel__lead {
+            margin: 0 0 16px;
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.45;
+            max-width: 52ch;
+        }
+
+        .declare-fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(14px, 2.5vw, 20px);
+        }
+
+        @media (max-width: 640px) {
+            .declare-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .declare-section .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .declare-section .form-group.full-width {
             grid-column: 1 / -1;
         }
 
-        .form-group label {
-            margin-bottom: 8px;
-            font-weight: 500;
+        .declare-section .form-group label,
+        .upload-label {
+            margin-bottom: 7px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+            color: var(--dark);
         }
 
-        .form-group input, .form-group select, .form-group textarea {
-            padding: 16px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 18px;
-            background: rgba(255,255,255,0.9);
+        .declare-section .form-group input,
+        .declare-section .form-group select,
+        .declare-section .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: 12px;
+            background: var(--surface);
             font-size: 16px;
             color: var(--dark);
-            transition: all 0.25s ease;
-            box-shadow: inset 0 1px 4px rgba(15,23,42,0.08);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .declare-section .form-group input:hover,
+        .declare-section .form-group select:hover,
+        .declare-section .form-group textarea:hover {
+            border-color: rgba(0, 183, 255, 0.35);
+        }
+
+        .declare-section .form-group input:focus,
+        .declare-section .form-group select:focus,
+        .declare-section .form-group textarea:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(0,183,255,0.12);
+            box-shadow: 0 0 0 3px rgba(0, 183, 255, 0.18);
         }
 
-        .form-group textarea {
+        .declare-section .form-group textarea {
             resize: vertical;
             min-height: 120px;
         }
@@ -191,8 +367,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .upload-label {
             display: block;
             margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 0.95rem;
         }
 
         .upload-card {
@@ -202,32 +376,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 22px 20px;
-            border-radius: 18px;
+            padding: clamp(18px, 4vw, 26px) 20px;
+            border-radius: 16px;
             text-align: center;
-            min-height: 168px;
+            min-height: 172px;
             overflow: hidden;
             isolation: isolate;
             background:
-                linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240, 249, 255, 0.9) 100%);
-            border: 1px solid rgba(0, 183, 255, 0.22);
+                linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 249, 255, 0.95) 100%);
+            border: 1px dashed rgba(0, 183, 255, 0.35);
             box-shadow:
-                0 0 0 1px rgba(255,255,255,0.8) inset,
-                0 10px 40px rgba(0, 183, 255, 0.08),
-                0 2px 12px rgba(15, 23, 42, 0.04);
-            transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+                0 0 0 1px rgba(255, 255, 255, 0.9) inset,
+                0 12px 36px rgba(0, 183, 255, 0.08);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .upload-card:hover {
-            border-color: rgba(0, 183, 255, 0.45);
+            border-color: rgba(0, 183, 255, 0.55);
+            border-style: solid;
             box-shadow:
-                0 0 0 1px rgba(255,255,255,0.9) inset,
-                0 14px 48px rgba(0, 183, 255, 0.12),
-                0 4px 16px rgba(14, 165, 233, 0.1);
+                0 0 0 1px rgba(255, 255, 255, 0.95) inset,
+                0 16px 44px rgba(0, 183, 255, 0.12);
         }
 
         .upload-card:focus-within {
             border-color: var(--accent);
+            border-style: solid;
             box-shadow: 0 0 0 3px rgba(0, 183, 255, 0.2);
         }
 
@@ -244,13 +418,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .upload-card__glow {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 183, 255, 0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0, 183, 255, 0.18) 0%, transparent 70%);
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -55%);
+            transform: translate(-50%, -52%);
             pointer-events: none;
             z-index: 0;
         }
@@ -260,12 +434,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             z-index: 1;
             display: grid;
             place-items: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: linear-gradient(145deg, rgba(0, 183, 255, 0.15), rgba(14, 165, 233, 0.08));
-            border: 1px solid rgba(0, 183, 255, 0.25);
-            font-size: 1.35rem;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(0, 183, 255, 0.14), rgba(14, 165, 233, 0.08));
+            border: 1px solid rgba(0, 183, 255, 0.28);
+            font-size: 1.4rem;
             line-height: 1;
         }
 
@@ -273,7 +447,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: relative;
             z-index: 1;
             margin: 0;
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.02em;
             color: var(--dark);
@@ -284,98 +458,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             z-index: 1;
             margin: 0;
             color: var(--muted);
-            font-size: 0.82rem;
-            line-height: 1.35;
-            max-width: 28ch;
+            font-size: 0.84rem;
+            line-height: 1.4;
+            max-width: 32ch;
         }
 
         .upload-card__cta {
             position: relative;
             z-index: 1;
             margin-top: 4px;
-            padding: 8px 16px;
+            padding: 9px 18px;
             border-radius: 999px;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: var(--accent-2);
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(0, 183, 255, 0.28);
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            border: none;
             pointer-events: none;
+            box-shadow: 0 4px 14px rgba(0, 183, 255, 0.3);
         }
 
         @media (max-width: 640px) {
-            .container {
-                padding: 0 14px;
-            }
-            main {
-                padding: 20px 0 0;
-            }
-            .declare-section {
-                padding: 18px 14px;
-                border-radius: 20px;
-            }
             .upload-card {
-                min-height: 132px;
-                padding: 12px 10px;
-                gap: 6px;
-                border-radius: 16px;
+                min-height: 148px;
+                padding: 14px 12px;
+                gap: 8px;
             }
             .upload-card__icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 12px;
-                font-size: 1.15rem;
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
             }
             .upload-card__title {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             .upload-card__hint {
-                font-size: 0.72rem;
-            }
-            .upload-card__cta {
-                font-size: 0.65rem;
-                padding: 6px 12px;
+                font-size: 0.78rem;
             }
             .upload-card__glow {
-                width: 90px;
-                height: 90px;
+                width: 100px;
+                height: 100px;
             }
+        }
+
+        .declare-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 4px;
         }
 
         .submit-btn {
-            padding: 12px 24px;
-            background: var(--accent);
-            color: white;
+            min-height: 52px;
+            padding: 15px 28px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            color: #fff;
             border: none;
-            border-radius: 6px;
-            font-weight: 500;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: 0.02em;
             cursor: pointer;
-            transition: all 0.3s ease;
-            grid-column: 1 / -1;
-            justify-self: start;
+            transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
+            box-shadow:
+                0 4px 14px rgba(0, 183, 255, 0.35),
+                0 1px 0 rgba(255, 255, 255, 0.25) inset;
         }
 
         .submit-btn:hover {
-            background: var(--accent-2);
-            transform: translateY(-1px);
+            filter: brightness(1.05);
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 28px rgba(14, 165, 233, 0.38),
+                0 1px 0 rgba(255, 255, 255, 0.25) inset;
         }
 
-        .errors {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            grid-column: 1 / -1;
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
-        @media (max-width: 768px) {
-            .declare-form {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
+        .declare-actions__hint {
+            font-size: 0.82rem;
+            color: var(--muted);
+            max-width: 36ch;
         }
     </style>
 </head>
@@ -384,63 +553,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main>
         <div class="container">
-            <section class="declare-section">
-                <h2>Déclarer un objet perdu</h2>
-                <?php if (!empty($errors)): ?>
-                    <div class="errors">
-                        <ul>
-                            <?php foreach ($errors as $error): ?>
-                                <li><?php echo htmlspecialchars($error); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-                <form method="POST" enctype="multipart/form-data" class="declare-form">
-                    <div class="form-group full-width">
-                        <label class="upload-label" for="photo1">Photo du document (recto) *</label>
-                        <div class="upload-card">
-                            <input type="file" id="photo1" name="photo1" accept="image/*" required class="upload-card__native" aria-describedby="photo1-hint">
-                            <span class="upload-card__glow" aria-hidden="true"></span>
-                            <span class="upload-card__icon" aria-hidden="true">📷</span>
-                            <strong class="upload-card__title">Recto du document</strong>
-                            <p class="upload-card__hint" id="photo1-hint">Photo nette, bien cadrée — tout le document visible.</p>
-                            <span class="upload-card__cta">Choisir un fichier</span>
+            <section class="declare-section" aria-labelledby="declare-heading">
+                <div class="declare-section__bg" aria-hidden="true"></div>
+                <div class="declare-section__inner">
+                    <header class="declare-section__head">
+                        <div class="declare-section__icon" aria-hidden="true">📋</div>
+                        <h2 id="declare-heading">Déclarer un objet perdu</h2>
+                    </header>
+                    <?php if (!empty($errors)): ?>
+                        <div class="declare-errors" role="alert">
+                            <ul>
+                                <?php foreach ($errors as $error): ?>
+                                    <li><?php echo htmlspecialchars($error); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
                         </div>
-                    </div>
+                    <?php endif; ?>
+                    <form method="POST" enctype="multipart/form-data" class="declare-form">
+                        <div class="declare-panel">
+                            <h3>Étape 1 — Document</h3>
+                            <p class="declare-panel__lead">Ajoutez une photo lisible du recto. Elle sert à identifier le document auprès des personnes qui pourraient l’avoir retrouvé.</p>
+                            <div class="form-group full-width">
+                                <label class="upload-label" for="photo1">Photo du document (recto) *</label>
+                                <div class="upload-card">
+                                    <input type="file" id="photo1" name="photo1" accept="image/*" required class="upload-card__native" aria-describedby="photo1-hint">
+                                    <span class="upload-card__glow" aria-hidden="true"></span>
+                                    <span class="upload-card__icon" aria-hidden="true">📷</span>
+                                    <strong class="upload-card__title">Recto du document</strong>
+                                    <p class="upload-card__hint" id="photo1-hint">Photo nette, bien cadrée — tout le document visible.</p>
+                                    <span class="upload-card__cta">Choisir un fichier</span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="nom">Nom *</label>
-                        <input type="text" id="nom" name="nom" required value="<?php echo htmlspecialchars($_POST['nom'] ?? ''); ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="prenom">Prénom *</label>
-                        <input type="text" id="prenom" name="prenom" required value="<?php echo htmlspecialchars($_POST['prenom'] ?? ''); ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="date_naissance">Date de naissance *</label>
-                        <input type="date" id="date_naissance" name="date_naissance" required value="<?php echo htmlspecialchars($_POST['date_naissance'] ?? ''); ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="lieu_naissance">Lieu de naissance *</label>
-                        <input type="text" id="lieu_naissance" name="lieu_naissance" required value="<?php echo htmlspecialchars($_POST['lieu_naissance'] ?? ''); ?>" placeholder="Ville, Pays">
-                    </div>
-                    <div class="form-group">
-                        <label for="categorie">Catégorie *</label>
-                        <select id="categorie" name="categorie" required>
-                            <option value="">Sélectionnez une catégorie</option>
-                            <option value="carte_identite" <?php echo ($_POST['categorie'] ?? '') === 'carte_identite' ? 'selected' : ''; ?>>Carte d'identité</option>
-                            <option value="passeport" <?php echo ($_POST['categorie'] ?? '') === 'passeport' ? 'selected' : ''; ?>>Passeport</option>
-                            <option value="permis_conduire" <?php echo ($_POST['categorie'] ?? '') === 'permis_conduire' ? 'selected' : ''; ?>>Permis de conduire</option>
-                            <option value="carte_vitale" <?php echo ($_POST['categorie'] ?? '') === 'carte_vitale' ? 'selected' : ''; ?>>Carte Vitale</option>
-                            <option value="autre" <?php echo ($_POST['categorie'] ?? '') === 'autre' ? 'selected' : ''; ?>>Autre</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="description">Description (optionnel)</label>
-                        <textarea id="description" name="description" placeholder="Ajoutez des détails supplémentaires..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Déclarer</button>
-                </form>
+                        <div class="declare-panel">
+                            <h3>Étape 2 — Titulaire</h3>
+                            <p class="declare-panel__lead">Les informations doivent correspondre à celles figurant sur le document.</p>
+                            <div class="declare-fields">
+                                <div class="form-group">
+                                    <label for="nom">Nom *</label>
+                                    <input type="text" id="nom" name="nom" required value="<?php echo htmlspecialchars($_POST['nom'] ?? ''); ?>" autocomplete="family-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prenom">Prénom *</label>
+                                    <input type="text" id="prenom" name="prenom" required value="<?php echo htmlspecialchars($_POST['prenom'] ?? ''); ?>" autocomplete="given-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="date_naissance">Date de naissance *</label>
+                                    <input type="date" id="date_naissance" name="date_naissance" required value="<?php echo htmlspecialchars($_POST['date_naissance'] ?? ''); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lieu_naissance">Lieu de naissance *</label>
+                                    <input type="text" id="lieu_naissance" name="lieu_naissance" required value="<?php echo htmlspecialchars($_POST['lieu_naissance'] ?? ''); ?>" placeholder="Ville, pays" autocomplete="off">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="categorie">Catégorie *</label>
+                                    <select id="categorie" name="categorie" required>
+                                        <option value="">Sélectionnez une catégorie</option>
+                                        <?php
+                                        $post_cat = $_POST['categorie'] ?? '';
+                                        foreach (lost_item_category_options() as $cat_val => $cat_label):
+                                            ?>
+                                        <option value="<?php echo htmlspecialchars($cat_val, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $post_cat === $cat_val ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat_label, ENT_QUOTES, 'UTF-8'); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="declare-panel">
+                            <h3>Étape 3 — Détails</h3>
+                            <p class="declare-panel__lead">Ajoutez une précision utile pour les trouveurs (couleur, marque, etc.).</p>
+                            <div class="form-group full-width">
+                                <label for="description">Description (optionnel)</label>
+                                <textarea id="description" name="description" placeholder="Ex. couleur du portefeuille, état du document…"><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+                            </div>
+                        </div>
+
+                        <div class="declare-actions">
+                            <button type="submit" class="submit-btn">Enregistrer la déclaration</button>
+                            <span class="declare-actions__hint">Votre déclaration sera visible par les utilisateurs qui recherchent un document correspondant.</span>
+                        </div>
+                    </form>
+                </div>
             </section>
         </div>
     </main>

@@ -73,7 +73,12 @@ function optimize_image($filepath) {
 function get_all_users() {
     $pdo = get_db_connection();
     $stmt = $pdo->query("SELECT * FROM users");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as &$r) {
+        $r['date_naissance'] = samapiece_birth_date_decrypt($r['date_naissance'] ?? null);
+    }
+    unset($r);
+    return $rows;
 }
 
 // Fonction pour obtenir un utilisateur par email
@@ -81,7 +86,12 @@ function get_user_by_email($email) {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return false;
+    }
+    $row['date_naissance'] = samapiece_birth_date_decrypt($row['date_naissance'] ?? null);
+    return $row;
 }
 
 /** Téléphone complet ex. +221771234567 (comme en base). */
@@ -98,7 +108,12 @@ function get_user_by_telephone($full_phone) {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare('SELECT * FROM users WHERE telephone = ?');
     $stmt->execute([$full_phone]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return false;
+    }
+    $row['date_naissance'] = samapiece_birth_date_decrypt($row['date_naissance'] ?? null);
+    return $row;
 }
 
 function auth_column_exists(PDO $pdo, $table, $col) {
@@ -106,6 +121,67 @@ function auth_column_exists(PDO $pdo, $table, $col) {
     $q = $pdo->prepare('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?');
     $q->execute([$db, $table, $col]);
     return (int) $q->fetchColumn() > 0;
+}
+
+function auth_column_mysql_data_type(PDO $pdo, $table, $col) {
+    $db = $pdo->query('SELECT DATABASE()')->fetchColumn();
+    $q = $pdo->prepare('SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?');
+    $q->execute([$db, $table, $col]);
+    $t = $q->fetchColumn();
+    return $t !== false ? (string) $t : null;
+}
+
+/**
+ * Colonnes date_naissance en VARCHAR + migration des anciennes valeurs DATE vers AES-256-GCM (préfixe B1:).
+ */
+function ensure_birth_date_encryption_schema() {
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        $pdo = get_db_connection();
+        foreach (['users', 'lost_items', 'search_reminders'] as $table) {
+            if (!auth_column_exists($pdo, $table, 'date_naissance')) {
+                continue;
+            }
+            $dt = auth_column_mysql_data_type($pdo, $table, 'date_naissance');
+            if ($dt === 'date') {
+                $pdo->exec("ALTER TABLE `{$table}` MODIFY COLUMN date_naissance VARCHAR(512) NULL");
+            }
+        }
+        samapiece_migrate_plain_birth_dates_to_encrypted($pdo);
+    } catch (Throwable $e) {
+        // droits MySQL ou schéma inchangé
+    }
+}
+
+function samapiece_migrate_plain_birth_dates_to_encrypted(PDO $pdo) {
+    foreach (['users', 'lost_items', 'search_reminders'] as $table) {
+        if (!auth_column_exists($pdo, $table, 'date_naissance')) {
+            continue;
+        }
+        $stmt = $pdo->query("SELECT id, date_naissance FROM `{$table}` WHERE date_naissance IS NOT NULL AND date_naissance != '' AND date_naissance NOT LIKE 'B1:%'");
+        if (!$stmt) {
+            continue;
+        }
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $v = trim((string) ($row['date_naissance'] ?? ''));
+            if ($v === '' || strpos($v, 'B1:') === 0) {
+                continue;
+            }
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $v)) {
+                continue;
+            }
+            $enc = samapiece_birth_date_encrypt($v);
+            if ($enc !== null && strpos($enc, 'B1:') === 0) {
+                $upd = $pdo->prepare("UPDATE `{$table}` SET date_naissance = ? WHERE id = ?");
+                $upd->execute([$enc, $row['id']]);
+            }
+        }
+    }
 }
 
 /**
@@ -244,12 +320,40 @@ function lost_item_recovery_status_label($status) {
     return $map[$s] ?? $map['en_attente'];
 }
 
-/** Libellé français pour la catégorie de document (e-mails, affichage). */
-function lost_item_categorie_label($categorie) {
-    $map = [
-        'carte_identite' => 'Carte d’identité',
+/**
+ * Options du formulaire de déclaration (libellés neutres, sans nom de pays).
+ *
+ * @return array<string, string> code stocké => libellé affiché
+ */
+function lost_item_category_options(): array {
+    return [
+        'carte_identite' => 'CNI / carte nationale d’identité',
         'passeport' => 'Passeport',
         'permis_conduire' => 'Permis de conduire',
+        'carte_electeur' => 'Carte d’électeur',
+        'carte_sejour' => 'Titre de séjour / carte de résident',
+        'carte_etudiant' => 'Carte étudiant ou scolaire',
+        'carte_sante' => 'Carte assurance maladie / mutuelle',
+        'carte_vitale' => 'Carte Vitale',
+        'autre' => 'Autre',
+    ];
+}
+
+/** Codes autorisés pour lost_items.categorie (validation formulaire). */
+function lost_item_category_valid_codes(): array {
+    return array_keys(lost_item_category_options());
+}
+
+/** Libellé français pour la catégorie de document (e-mails, listes, badges). */
+function lost_item_categorie_label($categorie) {
+    $map = [
+        'carte_identite' => 'CNI / carte d’identité nationale',
+        'passeport' => 'Passeport',
+        'permis_conduire' => 'Permis de conduire',
+        'carte_electeur' => 'Carte d’électeur',
+        'carte_sejour' => 'Titre de séjour / résident',
+        'carte_etudiant' => 'Carte étudiant / scolaire',
+        'carte_sante' => 'Carte assurance maladie / mutuelle',
         'carte_vitale' => 'Carte Vitale',
         'autre' => 'Autre',
     ];
@@ -297,7 +401,7 @@ function samapiece_send_recovery_request_emails(array $item, ?array $ownerUser, 
     $catEsc = htmlspecialchars($catLabel, ENT_QUOTES, 'UTF-8');
     $dashboardOwner = htmlspecialchars(samapiece_absolute_url('dashboard.php#mes-declarations'), ENT_QUOTES, 'UTF-8');
     $viewDecl = htmlspecialchars(samapiece_absolute_url('view_declaration.php?id=' . rawurlencode($lostId)), ENT_QUOTES, 'UTF-8');
-    $dashboardRequester = htmlspecialchars(samapiece_absolute_url('dashboard.php#mes-demandes-recuperation'), ENT_QUOTES, 'UTF-8');
+    $dashboardRequester = htmlspecialchars(samapiece_absolute_url('dashboard.php#mes-recuperations'), ENT_QUOTES, 'UTF-8');
     $handoverUrl = htmlspecialchars(recovery_handover_public_url($lostId, $handoverCode), ENT_QUOTES, 'UTF-8');
     $codeEsc = htmlspecialchars($handoverCode, ENT_QUOTES, 'UTF-8');
 
@@ -438,6 +542,7 @@ function ensure_auth_schema() {
         } catch (Throwable $e) {
             // ignore
         }
+        ensure_birth_date_encryption_schema();
     } catch (Throwable $e) {
         // schéma non modifié (droits, etc.)
     }
@@ -505,19 +610,95 @@ function auth_verify_email_otp(array $user, $code) {
     return [true, null];
 }
 
-function auth_send_otp_email_html($to, $code) {
-    $safe = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
-    $body = '<p>Bonjour,</p>';
-    $body .= '<p>Votre code Samapiece est : <strong style="font-size:1.25rem;letter-spacing:0.2em;">' . $safe . '</strong></p>';
-    $body .= '<p>Ce code expire dans 15 minutes. Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.</p>';
-    return send_email($to, 'Samapiece — votre code de vérification', $body);
+/**
+ * Envoie l’e-mail HTML du code OTP (inscription, connexion ou changement d’e-mail).
+ *
+ * @param string $purpose 'register' | 'login' | 'email_change'
+ */
+function auth_send_otp_email_html($to, $code, $prenom = '', $nom = '', $purpose = 'register') {
+    $to = trim((string) $to);
+    $code_raw = (string) $code;
+    $digits = preg_replace('/\D/', '', $code_raw);
+    $safe_code = htmlspecialchars($code_raw, ENT_QUOTES, 'UTF-8');
+    $code_display = $safe_code;
+    if (strlen($digits) === 6) {
+        $code_display = htmlspecialchars(substr($digits, 0, 3) . ' ' . substr($digits, 3, 3), ENT_QUOTES, 'UTF-8');
+    }
+
+    $prenom = trim((string) $prenom);
+    $nom = trim((string) $nom);
+    $name_full = trim($prenom . ' ' . $nom);
+    if ($name_full === '') {
+        $greeting_html = 'Bonjour,';
+    } else {
+        $greeting_html = 'Bonjour ' . htmlspecialchars($name_full, ENT_QUOTES, 'UTF-8') . ',';
+    }
+
+    $app = htmlspecialchars(APP_NAME, ENT_QUOTES, 'UTF-8');
+    $company = htmlspecialchars(APP_COMPANY_NAME, ENT_QUOTES, 'UTF-8');
+    $site_url = htmlspecialchars(samapiece_absolute_url('index.php'), ENT_QUOTES, 'UTF-8');
+
+    $purpose = in_array($purpose, ['register', 'login', 'email_change'], true) ? $purpose : 'register';
+
+    $copy = [
+        'register' => [
+            'subject' => APP_NAME . ' — Votre code pour activer votre compte',
+            'lead' => 'Merci de votre inscription sur ' . APP_NAME . '. Pour confirmer votre adresse e-mail et activer votre compte, saisissez le code ci-dessous sur la page de vérification.',
+        ],
+        'login' => [
+            'subject' => APP_NAME . ' — Votre code de connexion',
+            'lead' => 'Une connexion à votre compte ' . APP_NAME . ' a été demandée avec cette adresse e-mail. Utilisez le code ci-dessous pour vous connecter en toute sécurité.',
+        ],
+        'email_change' => [
+            'subject' => APP_NAME . ' — Confirmez votre nouvelle adresse e-mail',
+            'lead' => 'Vous avez demandé à associer cette adresse e-mail à votre compte ' . APP_NAME . '. Saisissez le code ci-dessous pour confirmer le changement.',
+        ],
+    ];
+    $meta = $copy[$purpose];
+    $subject = $meta['subject'];
+    $lead_html = htmlspecialchars($meta['lead'], ENT_QUOTES, 'UTF-8');
+    $title_esc = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
+
+    $body = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . $title_esc . '</title></head>';
+    $body .= '<body style="margin:0;padding:0;background-color:#f1f5f9;-webkit-text-size-adjust:100%;">';
+    $body .= '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">' . $app . ' — Code à 6 chiffres. Valide 15 minutes.</div>';
+    $body .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f1f5f9;padding:24px 12px;">';
+    $body .= '<tr><td align="center">';
+    $body .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 12px 40px rgba(15,23,42,0.08);">';
+    $body .= '<tr><td style="height:4px;background:linear-gradient(90deg,#22c55e 0%,#0ea5e9 50%,#00b7ff 100%);"></td></tr>';
+    $body .= '<tr><td style="padding:28px 28px 8px;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">';
+    $body .= '<p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#0ea5e9;">' . $app . '</p>';
+    $body .= '<h1 style="margin:0 0 16px;font-size:22px;line-height:1.25;font-weight:800;letter-spacing:-0.02em;color:#0f172a;">Code de vérification</h1>';
+    $body .= '<p style="margin:0 0 16px;font-size:16px;line-height:1.55;color:#334155;">' . $greeting_html . '</p>';
+    $body .= '<p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#64748b;">' . $lead_html . '</p>';
+    $body .= '</td></tr>';
+    $body .= '<tr><td style="padding:0 28px 28px;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">';
+    $body .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:linear-gradient(145deg,#f8fafc 0%,#f0f9ff 100%);border-radius:14px;border:1px solid #bae6fd;">';
+    $body .= '<tr><td align="center" style="padding:24px 20px;">';
+    $body .= '<p style="margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Votre code</p>';
+    $body .= '<p style="margin:0;font-family:Consolas,Monaco,ui-monospace,monospace;font-size:32px;font-weight:800;letter-spacing:0.35em;color:#22c55e;line-height:1.2;text-shadow:0 1px 0 rgba(255,255,255,0.5);">' . $code_display . '</p>';
+    $body .= '</td></tr></table>';
+    $body .= '<p style="margin:20px 0 0;font-size:13px;line-height:1.5;color:#64748b;">Ce code est valable <strong style="color:#0f172a;">15 minutes</strong>. Ne le partagez avec personne.</p>';
+    $body .= '<p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#94a3b8;">Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce message en toute sécurité.</p>';
+    $body .= '</td></tr>';
+    $body .= '<tr><td style="padding:16px 28px 24px;border-top:1px solid #e2e8f0;background-color:#f8fafc;">';
+    $body .= '<p style="margin:0 0 8px;font-size:12px;line-height:1.45;color:#64748b;">';
+    $body .= '<a href="' . $site_url . '" style="color:#0ea5e9;font-weight:600;text-decoration:none;">' . $app . '</a>';
+    $body .= ' — Rapprocher les documents perdus de leurs propriétaires.</p>';
+    $body .= '<p style="margin:0;font-size:11px;line-height:1.4;color:#94a3b8;">© ' . date('Y') . ' ' . $app . ' · ' . $company . '</p>';
+    $body .= '</td></tr></table>';
+    $body .= '</td></tr></table>';
+    $body .= '</body></html>';
+
+    return send_email($to, $subject, $body);
 }
 
 function auth_user_names_match(array $user, $nom, $prenom, $date_naissance) {
     $un = mb_strtolower(trim($user['nom'] ?? ''), 'UTF-8');
     $up = mb_strtolower(trim($user['prenom'] ?? ''), 'UTF-8');
-    $dn = isset($user['date_naissance']) && $user['date_naissance'] !== null && $user['date_naissance'] !== ''
-        ? substr((string) $user['date_naissance'], 0, 10)
+    $dnRaw = $user['date_naissance'] ?? '';
+    $dn = $dnRaw !== null && $dnRaw !== ''
+        ? substr(samapiece_birth_date_decrypt((string) $dnRaw), 0, 10)
         : '';
     $nn = mb_strtolower(trim($nom), 'UTF-8');
     $np = mb_strtolower(trim($prenom), 'UTF-8');
@@ -536,7 +717,12 @@ function get_user_by_id($id) {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
     $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return false;
+    }
+    $row['date_naissance'] = samapiece_birth_date_decrypt($row['date_naissance'] ?? null);
+    return $row;
 }
 
 /**
@@ -628,7 +814,7 @@ function update_user_profile(array $user, $nom, $prenom, $email, $code_pays, $te
         auth_set_email_otp($uid, $otp, 15);
         $stmt = $pdo->prepare('UPDATE users SET nom = ?, prenom = ?, email = ?, telephone = ?, code_pays = ?, is_verified = 0 WHERE id = ?');
         $stmt->execute([$nom, $prenom, $email, $full_phone, $code_pays, $uid]);
-        if (!auth_send_otp_email_html($email, $otp)) {
+        if (!auth_send_otp_email_html($email, $otp, $prenom, $nom, 'email_change')) {
             return [false, 'Impossible d’envoyer le code de vérification à la nouvelle adresse.'];
         }
         $_SESSION['user_email'] = $email;
@@ -652,7 +838,12 @@ function get_all_documents() {
 function get_all_lost_items() {
     $pdo = get_db_connection();
     $stmt = $pdo->query("SELECT * FROM lost_items");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as &$r) {
+        $r['date_naissance'] = samapiece_birth_date_decrypt($r['date_naissance'] ?? null);
+    }
+    unset($r);
+    return $rows;
 }
 
 // Fonction pour ajouter un objet perdu
@@ -666,6 +857,11 @@ function add_lost_item($item) {
 
     ensure_lost_item_recovery_schema();
     $pdo = get_db_connection();
+    $dn_store = $item['date_naissance'] ?? '';
+    $enc_dn = samapiece_birth_date_encrypt($dn_store);
+    if ($enc_dn !== null) {
+        $item['date_naissance'] = $enc_dn;
+    }
     $stmt = $pdo->prepare("INSERT INTO lost_items (id, user_id, nom, prenom, date_naissance, lieu_naissance, categorie, telephone, description, photo1, photo2, recovery_status, date_declared) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', NOW())");
     $stmt->execute([
         $item['id'],
@@ -680,7 +876,7 @@ function add_lost_item($item) {
         $item['photo1'] ?? null,
         $item['photo2'] ?? null
     ]);
-    notify_search_reminders_for_lost_item($item);
+    notify_search_reminders_for_lost_item(array_merge($item, ['date_naissance' => $dn_store]));
     return $item['id'];
 }
 
@@ -710,7 +906,7 @@ function ensure_search_reminder_tables() {
         notify_email VARCHAR(255) NOT NULL,
         nom VARCHAR(255) NOT NULL DEFAULT '',
         prenom VARCHAR(255) NOT NULL DEFAULT '',
-        date_naissance DATE NULL,
+        date_naissance VARCHAR(512) NULL,
         lieu_naissance VARCHAR(255) NOT NULL DEFAULT '',
         categorie VARCHAR(64) NOT NULL DEFAULT '',
         user_id VARCHAR(64) NULL,
@@ -739,8 +935,9 @@ function lost_item_matches_reminder_criteria(array $item, array $criteria) {
     $date_naissance = trim($criteria['date_naissance'] ?? '');
     $lieu_naissance = trim($criteria['lieu_naissance'] ?? '');
     $categorie = trim($criteria['categorie'] ?? '');
-    $itemDate = isset($item['date_naissance']) ? substr((string) $item['date_naissance'], 0, 10) : '';
-    $critDate = $date_naissance !== '' ? substr($date_naissance, 0, 10) : '';
+    $itemRaw = $item['date_naissance'] ?? '';
+    $itemDate = $itemRaw !== null && $itemRaw !== '' ? substr(samapiece_birth_date_decrypt((string) $itemRaw), 0, 10) : '';
+    $critDate = $date_naissance !== '' ? substr(samapiece_birth_date_decrypt($date_naissance), 0, 10) : '';
     $matches_nom = $nom === '' || stripos($item['nom'] ?? '', $nom) !== false;
     $matches_prenom = $prenom === '' || stripos($item['prenom'] ?? '', $prenom) !== false;
     $matches_date = $critDate === '' || $itemDate === $critDate;
@@ -765,7 +962,11 @@ function add_search_reminder(array $data) {
     }
     $id = generate_uuid();
     $user_id = isset($data['user_id']) ? $data['user_id'] : null;
-    $date_sql = $date_naissance !== '' ? $date_naissance : null;
+    $date_sql = null;
+    if ($date_naissance !== '') {
+        $enc = samapiece_birth_date_encrypt($date_naissance);
+        $date_sql = $enc !== null ? $enc : $date_naissance;
+    }
     $pdo = get_db_connection();
     $stmt = $pdo->prepare('INSERT INTO search_reminders (id, notify_email, nom, prenom, date_naissance, lieu_naissance, categorie, user_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())');
     $stmt->execute([$id, $email, $nom, $prenom, $date_sql, $lieu_naissance, $categorie, $user_id]);
@@ -795,7 +996,7 @@ function notify_search_reminders_for_lost_item(array $item) {
         $subject = 'Samapiece : un document correspond à votre recherche';
         $safe_nom = htmlspecialchars($item['nom'] ?? '', ENT_QUOTES, 'UTF-8');
         $safe_prenom = htmlspecialchars($item['prenom'] ?? '', ENT_QUOTES, 'UTF-8');
-        $safe_cat = htmlspecialchars($item['categorie'] ?? '', ENT_QUOTES, 'UTF-8');
+        $safe_cat = htmlspecialchars(lost_item_categorie_label($item['categorie'] ?? ''), ENT_QUOTES, 'UTF-8');
         $body = '<p>Bonjour,</p>';
         $body .= '<p>Un document a été déclaré sur Samapiece avec des informations qui correspondent aux critères de votre alerte « Me rappeler ».</p>';
         $body .= '<p><strong>Indications :</strong> ' . $safe_prenom . ' ' . $safe_nom . ' — type : ' . $safe_cat . '</p>';
@@ -869,6 +1070,7 @@ function verify_email($token) {
     $stmt->execute([$token]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user) {
+        $user['date_naissance'] = samapiece_birth_date_decrypt($user['date_naissance'] ?? null);
         $stmt = $pdo->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE id = ?");
         $stmt->execute([$user['id']]);
         return $user;

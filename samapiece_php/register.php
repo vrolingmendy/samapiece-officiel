@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $otp = auth_generate_otp();
                 auth_set_email_otp($user_id, $otp, 15);
                 $user = get_user_by_id($user_id);
-                if ($user && auth_send_otp_email_html($user['email'], $otp)) {
+                if ($user && auth_send_otp_email_html($user['email'], $otp, $user['prenom'] ?? '', $user['nom'] ?? '', 'register')) {
                     $_SESSION['register_otp_sent_at'] = time();
                     $message = 'Un nouveau code vous a été envoyé par e-mail.';
                     $message_type = 'info';
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare('INSERT INTO users (id, nom, prenom, email, telephone, code_pays, password_hash, is_verified, verification_token, date_creation, registration_type, date_naissance, email_otp_hash, email_otp_expires) VALUES (?, ?, ?, ?, ?, ?, NULL, 0, NULL, NOW(), ?, NULL, NULL, NULL)');
                     $stmt->execute([$user_id, $nom, $prenom, $email, $full_phone, $code_pays, 'otp_email']);
                     auth_set_email_otp($user_id, $otp, 15);
-                    $sent = auth_send_otp_email_html($email, $otp);
+                    $sent = auth_send_otp_email_html($email, $otp, $prenom, $nom, 'register');
                     if (!$sent) {
                         $pdo->prepare('DELETE FROM users WHERE id = ?')->execute([$user_id]);
                         $errors[] = 'Impossible d’envoyer l’email. Vérifiez le mot de passe SMTP (.env / config.local.php / variables serveur) et la connexion réseau (SSL).';
@@ -175,6 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($errors)) {
                 $user_id = generate_uuid();
                 $pdo = get_db_connection();
+                $dn_enc = samapiece_birth_date_encrypt($date_naissance);
                 $stmt = $pdo->prepare('INSERT INTO users (id, nom, prenom, email, telephone, code_pays, password_hash, is_verified, verification_token, date_creation, registration_type, date_naissance, email_otp_hash, email_otp_expires) VALUES (?, ?, ?, ?, ?, ?, ?, 1, NULL, NOW(), ?, ?, NULL, NULL)');
                 $stmt->execute([
                     $user_id,
@@ -185,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $code_pays,
                     SecurityManager::hash_password($password),
                     'password_phone',
-                    $date_naissance,
+                    $dn_enc !== null ? $dn_enc : $date_naissance,
                 ]);
                 $success = true;
                 $message = 'Compte créé. Vous pouvez vous connecter avec votre numéro de téléphone et votre mot de passe.';

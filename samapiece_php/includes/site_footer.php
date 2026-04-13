@@ -33,9 +33,16 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: clamp(10px, 2vw, 20px);
     align-items: start;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(16px, 4vw, 24px);
+    padding-right: clamp(16px, 4vw, 24px);
+    box-sizing: border-box;
+    width: 100%;
 }
 .site-footer__brandcol {
-    padding-left: clamp(8px, 1.5vw, 18px);
+    padding-left: 0;
     min-width: 0;
 }
 .site-footer__brand {
@@ -76,8 +83,10 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
     display: flex;
     flex-wrap: wrap;
     gap: 6px 12px;
-    justify-content: flex-end;
-    padding-right: clamp(6px, 1.5vw, 16px);
+    justify-content: flex-start;
+    align-content: flex-start;
+    padding-left: 0;
+    padding-right: 0;
     min-width: 0;
     row-gap: 8px;
 }
@@ -96,10 +105,13 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
 }
 .site-footer__socialblock {
     width: 100%;
-    max-width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 4px;
     margin-bottom: 0;
-    padding: 4px 8px 4px;
+    padding: 4px clamp(16px, 4vw, 24px);
+    box-sizing: border-box;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.75);
     border: 1px solid rgba(226, 232, 240, 0.9);
@@ -155,23 +167,22 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
 .site-footer__social-btn--facebook { background: #1877f2; }
 .site-footer__social-btn--facebook svg { fill: #fff; }
 .site-footer__bottom {
-    margin: 6px 0 0;
-    padding: 6px 0 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 6px;
+    padding: 6px clamp(16px, 4vw, 24px) 0;
+    box-sizing: border-box;
     border-top: 1px solid rgba(226, 232, 240, 0.85);
     text-align: center;
     font-size: 0.68rem;
     color: #94a3b8;
     line-height: 1.35;
+    width: 100%;
 }
 @media (min-width: 901px) {
     .site-footer__inner {
         gap: clamp(12px, 2.5vw, 24px);
-    }
-    .site-footer__brandcol {
-        padding-left: clamp(12px, 2vw, 22px);
-    }
-    .site-footer__nav {
-        padding-right: clamp(8px, 1.5vw, 20px);
     }
     .site-footer__tagline {
         max-width: 42ch;
@@ -182,16 +193,10 @@ if (empty($GLOBALS['_site_footer_styles_printed'])) {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-    .site-footer__brandcol {
-        padding-left: clamp(2px, 1vw, 8px);
-    }
     .site-footer__nav {
-        justify-content: flex-start;
-        padding-right: 0;
         gap: 6px 10px;
     }
     .site-footer__socialblock {
-        padding: 4px 8px;
         margin-top: 4px;
     }
 }

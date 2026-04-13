@@ -18,9 +18,14 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute([$user['id']]);
 $user_documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$stmt_demandes = $pdo->prepare("SELECT COUNT(*) FROM lost_items WHERE user_id = ? AND recovery_status = 'demande_recuperation'");
-$stmt_demandes->execute([$user['id']]);
-$nb_demandes_recuperation = (int) $stmt_demandes->fetchColumn();
+foreach ($user_documents as $k => $row) {
+    $user_documents[$k]['date_naissance'] = samapiece_birth_date_decrypt($row['date_naissance'] ?? null);
+}
+$stmt_recuperes = $pdo->prepare(
+    "SELECT COUNT(*) FROM lost_items WHERE recovery_status = 'recupere' AND (user_id = ? OR recovery_requester_id = ?)"
+);
+$stmt_recuperes->execute([$user['id'], $user['id']]);
+$nb_documents_recuperes = (int) $stmt_recuperes->fetchColumn();
 
 foreach ($user_documents as $idx => $row) {
     if (lost_item_recovery_status($row) === 'demande_recuperation' && empty($row['recovery_handover_code'])) {
@@ -37,6 +42,9 @@ $stmt_my_req = $pdo->prepare(
 );
 $stmt_my_req->execute([$user['id']]);
 $recovery_requests = $stmt_my_req->fetchAll(PDO::FETCH_ASSOC);
+foreach ($recovery_requests as $k => $row) {
+    $recovery_requests[$k]['date_naissance'] = samapiece_birth_date_decrypt($row['date_naissance'] ?? null);
+}
 
 $handover_flash = null;
 if (!empty($_SESSION['handover_flash'])) {
@@ -889,8 +897,8 @@ $page_title = 'Mon Dashboard - Samapiece';
                         <h3><?php echo count($user_documents); ?></h3>
                     </div>
                     <div class="stats">
-                        <p class="welcome-label">Demandes de récupération</p>
-                        <h3><?php echo $nb_demandes_recuperation; ?></h3>
+                        <p class="welcome-label">Documents récupérés</p>
+                        <h3><?php echo $nb_documents_recuperes; ?></h3>
                     </div>
                 </div>
             </section>
@@ -912,7 +920,7 @@ $page_title = 'Mon Dashboard - Samapiece';
             <section class="dashboard-section-tabs" id="dashboard-listes-documents">
                 <div class="dashboard-tab-bar" role="tablist" aria-label="Vos listes">
                     <button type="button" class="dashboard-tab-btn is-active" role="tab" id="tab-mes-declarations" aria-selected="true" aria-controls="mes-declarations" data-tab="mes-declarations">Mes déclarations</button>
-                    <button type="button" class="dashboard-tab-btn" role="tab" id="tab-mes-demandes-recuperation" aria-selected="false" aria-controls="mes-demandes-recuperation" data-tab="mes-demandes-recuperation">Mes demandes de récupération</button>
+                    <button type="button" class="dashboard-tab-btn" role="tab" id="tab-mes-recuperations" aria-selected="false" aria-controls="mes-recuperations" data-tab="mes-recuperations">Mes récupérations</button>
                 </div>
 
                 <div id="mes-declarations" class="dashboard-tab-panel dashboard-declarations" role="tabpanel" aria-labelledby="tab-mes-declarations">
@@ -931,17 +939,8 @@ $page_title = 'Mon Dashboard - Samapiece';
                             if ($nom_complet === '') {
                                 $nom_complet = 'Document';
                             }
-                            $cat_label = $document['categorie'] ?? 'Document';
-                            $cat_labels = [
-                                'carte_identite' => 'Carte d’identité',
-                                'passeport' => 'Passeport',
-                                'permis_conduire' => 'Permis de conduire',
-                                'carte_vitale' => 'Carte Vitale',
-                                'autre' => 'Autre',
-                            ];
-                            if (isset($cat_labels[$cat_label])) {
-                                $cat_label = $cat_labels[$cat_label];
-                            }
+                            $cat_key = $document['categorie'] ?? '';
+                            $cat_label = $cat_key !== '' ? lost_item_categorie_label($cat_key) : 'Document';
                             $date_decl = !empty($document['date_declared'])
                                 ? date('d/m/Y', strtotime($document['date_declared']))
                                 : '—';
@@ -1019,11 +1018,11 @@ $page_title = 'Mon Dashboard - Samapiece';
                 <?php endif; ?>
                 </div>
 
-                <div id="mes-demandes-recuperation" class="dashboard-tab-panel dashboard-declarations" role="tabpanel" aria-labelledby="tab-mes-demandes-recuperation" hidden>
+                <div id="mes-recuperations" class="dashboard-tab-panel dashboard-declarations" role="tabpanel" aria-labelledby="tab-mes-recuperations" hidden>
                 <?php if (empty($recovery_requests)): ?>
                     <div class="declaration-empty">
-                        <h3>Aucune demande</h3>
-                        <p>Après une recherche, utilisez « Demander la récupération » sur un résultat pour retrouver le document ici.</p>
+                        <h3>Aucune récupération</h3>
+                        <p>Après une recherche, utilisez « Demander la récupération » sur un résultat : vos demandes et leur statut apparaissent ici.</p>
                         <a href="search.php">Rechercher un document</a>
                     </div>
                 <?php else: ?>
@@ -1035,17 +1034,8 @@ $page_title = 'Mon Dashboard - Samapiece';
                             if ($nom_complet === '') {
                                 $nom_complet = 'Document';
                             }
-                            $cat_label = $document['categorie'] ?? 'Document';
-                            $cat_labels = [
-                                'carte_identite' => 'Carte d’identité',
-                                'passeport' => 'Passeport',
-                                'permis_conduire' => 'Permis de conduire',
-                                'carte_vitale' => 'Carte Vitale',
-                                'autre' => 'Autre',
-                            ];
-                            if (isset($cat_labels[$cat_label])) {
-                                $cat_label = $cat_labels[$cat_label];
-                            }
+                            $cat_key = $document['categorie'] ?? '';
+                            $cat_label = $cat_key !== '' ? lost_item_categorie_label($cat_key) : 'Document';
                             $date_decl = !empty($document['date_declared'])
                                 ? date('d/m/Y', strtotime($document['date_declared']))
                                 : '—';
@@ -1140,7 +1130,7 @@ $page_title = 'Mon Dashboard - Samapiece';
             var buttons = document.querySelectorAll('.dashboard-tab-btn');
             var byTab = {
                 'mes-declarations': document.getElementById('mes-declarations'),
-                'mes-demandes-recuperation': document.getElementById('mes-demandes-recuperation')
+                'mes-recuperations': document.getElementById('mes-recuperations')
             };
             function activate(tab) {
                 buttons.forEach(function (btn) {
@@ -1163,8 +1153,8 @@ $page_title = 'Mon Dashboard - Samapiece';
                 });
             });
             var h = (window.location.hash || '').replace(/^#/, '');
-            if (h === 'mes-demandes-recuperation') {
-                activate('mes-demandes-recuperation');
+            if (h === 'mes-recuperations' || h === 'mes-demandes-recuperation') {
+                activate('mes-recuperations');
             } else {
                 activate('mes-declarations');
             }
